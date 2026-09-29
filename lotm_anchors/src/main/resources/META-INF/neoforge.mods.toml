@@ -1,0 +1,31 @@
+modLoader="javafml"
+loaderVersion="${loader_version_range}"
+license="${mod_license}"
+
+[[mods]]
+modId="${mod_id}"
+version="${mod_version}"
+displayName="${mod_name}"
+authors="LOTM Anchors"
+description='''Anchor and stability system for LOTMCraft 1.13.0. Quests and honorific-name prayers can grant anchors; advancement stability is integrated with LOTMCraft's existing advancement failure system.'''
+
+[[dependencies.${mod_id}]]
+modId="neoforge"
+type="required"
+versionRange="[21.1.217,)"
+ordering="AFTER"
+side="BOTH"
+
+[[dependencies.${mod_id}]]
+modId="minecraft"
+type="required"
+versionRange="[1.21.1]"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.${mod_id}]]
+modId="lotmcraft"
+type="required"
+versionRange="[1.0.0,)"
+ordering="AFTER"
+side="BOTH"
