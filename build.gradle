@@ -2,6 +2,7 @@ plugins {
     id 'java-library'
     id 'maven-publish'
     id 'net.neoforged.gradle.userdev' version '7.0.163'
+    id 'net.neoforged.gradle.mixin' version '7.0.163'
 }
 
 group = mod_group_id
@@ -29,6 +30,10 @@ runs {
 }
 
 sourceSets.main.resources.srcDir 'src/generated/resources'
+
+mixin {
+    configs.add("${mod_id}.mixins.json")
+}
 
 dependencies {
     implementation "net.neoforged:neoforge:${neo_version}"
