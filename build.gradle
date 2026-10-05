@@ -59,3 +59,10 @@ tasks.withType(ProcessResources).configureEach {
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
+// Cria um texto com a data e hora atual
+def timestamp = new Date().format("MMdd_HHmm")
+
+// Modifica a tarefa de geração do .jar para incluir o timestamp no nome
+tasks.withType(Jar) {
+    archiveVersion.set("${project.version}-${timestamp}")
+}
