@@ -8,7 +8,7 @@ O formato segue uma organização cronológica inversa, com base no histórico d
 
 ### Alterado
 
-- Ajustado o tratamento de perda de Âncoras no `PlayerLifecycleHandler` para limitar a perda aplicada no login após ausência prolongada.
+- Ajustado o tratamento de perda de Âncoras no `PlayerLifecycleHandler` para limitar a perda aplicada após ausência prolongada do jogador.
 - A perda aplicada nessa rotina passou a considerar 20% das Âncoras atuais.
 - Atualizadas para inglês as mensagens exibidas ao jogador sobre risco de falha, perda de Âncoras e recompensas por oração.
 - Adicionado o `HonorificNamesEventHandlerMixin` para observar a conclusão de orações por Nome Honorífico.
@@ -16,6 +16,7 @@ O formato segue uma organização cronológica inversa, com base no histórico d
 
 ### Commits
 
+- [`6ac3748`](https://github.com/KawanVillar/LOTM-Anchors/commit/6ac374a8fe1ed34396b6698bc8afb46bbae6a692) — `feat: limitar perda de ancoras na morte no PlayerLifecycleHandler`
 - [`9d4cb44`](https://github.com/KawanVillar/LOTM-Anchors/commit/9d4cb4473e131754018eaede680eb1b8ad733ce3) — `feat: limitar perda de ancoras na morte no PlayerLifecycleHandler`
 - [`bfb2331`](https://github.com/KawanVillar/LOTM-Anchors/commit/bfb233194b726a9982b2909c5694028672c5f417) — `feat: limitar perda de ancoras na morte no PlayerLifecycleHandler`
 
