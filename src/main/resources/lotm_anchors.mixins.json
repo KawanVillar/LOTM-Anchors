@@ -4,7 +4,8 @@
   "package": "com.kawan.lotmanchors.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "QuestManagerMixin"
+    "QuestManagerMixin",
+    "HonorificNamesEventHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

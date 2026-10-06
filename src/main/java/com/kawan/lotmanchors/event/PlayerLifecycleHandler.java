@@ -25,9 +25,11 @@ public final class PlayerLifecycleHandler {
                 if (periods > 0) {
                     double multiplier = Math.pow(1.0D - AnchorConfig.offlineDecayPercentPerDay() / 100.0D, periods);
                     long desired = (long) Math.floor(data.getTotalAnchors() * multiplier);
-                    long lost = data.getTotalAnchors() - desired;
+                    long currentAnchors = data.getTotalAnchors();
+                    long lost = Math.round(currentAnchors * 0.20D);
+
                     data.removeAnchors(lost);
-                    if (lost > 0) player.sendSystemMessage(Component.literal("§c[Âncoras] Você perdeu " + lost + " Âncoras por ausência prolongada."));
+                    if (lost > 0) player.sendSystemMessage(Component.literal("§c[Anchors] You lost " + lost + " Anchors for prolonged absence."));
                 }
             }
         }

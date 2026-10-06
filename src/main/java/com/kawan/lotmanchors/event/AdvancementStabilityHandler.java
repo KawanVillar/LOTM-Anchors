@@ -22,8 +22,8 @@ public final class AdvancementStabilityHandler {
         event.setFailureChance(Math.min(1.0D, combined));
 
         player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
-                "§e[Anchors] Estabilidade insuficiente para Seq. " + event.getSequence()
-                        + " — risco de falha: " + Math.round(combined * 100.0D) + "%"
+                "§e[Anchors] Insufficient stability for Seq. " + event.getSequence()
+                        + " — risk of failure: " + Math.round(combined * 100.0D) + "%"
         ));
     }
 }

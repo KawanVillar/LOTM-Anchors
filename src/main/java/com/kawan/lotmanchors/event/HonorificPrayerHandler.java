@@ -41,9 +41,9 @@ public final class HonorificPrayerHandler {
             if (data.isPrayerOnCooldown(key, now)) continue;
 
             data.setPrayerCooldown(key, now + AnchorConfig.prayerCooldownMinutes() * 60_000L);
-            AnchorManager.give(target, AnchorConfig.prayerReward(), "oração pelo Nome Honorífico");
+            AnchorManager.give(target, AnchorConfig.prayerReward(), "Prayer for the Honorary Name");
             if (AnchorConfig.announcePrayerReward()) {
-                worshipper.sendSystemMessage(Component.literal("§dSua oração foi reconhecida."));
+                worshipper.sendSystemMessage(Component.literal("§dYour prayer was acknowledged."));
             }
         }
         lastObservedSize = size;
