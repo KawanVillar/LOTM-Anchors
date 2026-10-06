@@ -5,6 +5,7 @@ import com.kawan.lotmanchors.anchor.AnchorManager;
 import com.kawan.lotmanchors.command.AnchorCommand;
 import com.kawan.lotmanchors.config.AnchorConfig;
 import com.kawan.lotmanchors.event.AdvancementStabilityHandler;
+import com.kawan.lotmanchors.event.AnchorDeathHandler;
 import com.kawan.lotmanchors.event.HonorificPrayerHandler;
 import com.kawan.lotmanchors.event.PlayerLifecycleHandler;
 import net.neoforged.bus.api.IEventBus;
@@ -26,7 +27,9 @@ public final class LOTMAnchors {
             DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, MOD_ID);
 
     public static final Supplier<AttachmentType<AnchorData>> ANCHOR_DATA = ATTACHMENTS.register(
-            "anchor_data", () -> AttachmentType.serializable(AnchorData::new).build()
+            "anchor_data", () -> AttachmentType.serializable(AnchorData::new)
+                    .copyOnDeath()
+                    .build()
     );
 
     public LOTMAnchors(IEventBus modBus, ModContainer container) {
@@ -37,5 +40,6 @@ public final class LOTMAnchors {
         NeoForge.EVENT_BUS.register(new HonorificPrayerHandler());
         NeoForge.EVENT_BUS.register(new PlayerLifecycleHandler());
         NeoForge.EVENT_BUS.addListener(AnchorCommand::register);
+        NeoForge.EVENT_BUS.register(new AnchorDeathHandler());
     }
 }
