@@ -4,6 +4,22 @@ Todas as alterações relevantes deste projeto estão documentadas neste arquivo
 
 O formato segue uma organização cronológica inversa, com base no histórico de commits do repositório.
 
+## [0.1.4] - 2026-10-07
+
+### Adicionado
+
+- Adicionada uma interface gráfica de informações para consultar as Âncoras de um jogador.
+- A interface exibe o pathway, Sequence, nome da Sequence, quantidade atual de Âncoras, requisitos para o próximo avanço, Âncoras faltantes, risco adicional, Âncoras obtidas ao longo da vida e Âncoras perdidas.
+- Adicionado o comando `/anchors info` para abrir a interface do próprio jogador.
+- Adicionada a opção `/anchors info <player>` para consultar a interface de outro jogador, disponível para operadores.
+- O comando `/anchors` agora abre diretamente a interface gráfica em vez de exibir as informações apenas no chat.
+- Adicionada comunicação cliente-servidor por payload de rede para transmitir os dados da interface.
+- Adicionado o registro do canal de rede `lotm_anchors:open_anchor_info` com protocolo `1`.
+
+### Commits
+
+- [`61a7405`](https://github.com/KawanVillar/LOTM-Anchors/commit/61a74052834ba058bce5d245905b36827f774c54) — `feat: adicionado sistema de âncoras na interface e conexão via rede.`
+
 ## [0.1.3] - 2026-10-06
 
 ### Alterado
@@ -34,7 +50,6 @@ O formato segue uma organização cronológica inversa, com base no histórico d
 
 - [`6868567`](https://github.com/KawanVillar/LOTM-Anchors/commit/6868567c3bcbf5832d3d03e867b6149f357e9d61) — `docs: atualizar README e corrigir Gradle Wrapper`
 - [`b0cd100`](https://github.com/KawanVillar/LOTM-Anchors/commit/b0cd1004999731317d7f914332c23513a95dbe6d) — `docs: atualizar README com setup, comandos e compatibilidade`
-- [`dbe1bb3`](https://github.com/KawanVillar/LOTM-Anchors/commit/dbe1bb3d6adcfb52e0b7534bfc0d88feefd1b72f) — `docs: adicionar licença proprietária`
 
 ## Correções estruturais e de integração - 2026-10-05
 
@@ -80,5 +95,6 @@ O formato segue uma organização cronológica inversa, com base no histórico d
 
 - [`1507ea7`](https://github.com/KawanVillar/LOTM-Anchors/commit/1507ea78a70de7679d299f704774a974235373f1) — `init: configuração inicial e estrutura base do projeto`
 
+[0.1.4]: https://github.com/KawanVillar/LOTM-Anchors/compare/0.1.3...master
 [0.1.3]: https://github.com/KawanVillar/LOTM-Anchors/compare/0.1.0-alpha...master
 [0.1.0-alpha]: https://github.com/KawanVillar/LOTM-Anchors/commit/1507ea78a70de7679d299f704774a974235373f1
