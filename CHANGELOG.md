@@ -8,6 +8,10 @@ O formato segue uma organização cronológica inversa, com base no histórico d
 
 ### Adicionado
 
+- Adicionado o cálculo de Âncoras únicas geradas por Avatares do Error pertencentes ao jogador.
+- Adicionado o agrupamento de Avatares do Error por Sequence, abrangendo as Sequences 1, 2, 3 e 4.
+- Adicionadas configurações para definir a quantidade de Âncoras únicas concedidas por Avatar do Error de cada Sequence.
+- Adicionado o comando `/anchors debug avatars`, disponível para operadores, para consultar a quantidade de Avatares do Error e o total de Âncoras únicas calculadas.
 - Adicionada uma interface gráfica de informações para consultar as Âncoras de um jogador.
 - A interface exibe o pathway, Sequence, nome da Sequence, quantidade atual de Âncoras, requisitos para o próximo avanço, Âncoras faltantes, risco adicional, Âncoras obtidas ao longo da vida e Âncoras perdidas.
 - Adicionado o comando `/anchors info` para abrir a interface do próprio jogador.
@@ -15,9 +19,15 @@ O formato segue uma organização cronológica inversa, com base no histórico d
 - O comando `/anchors` agora abre diretamente a interface gráfica em vez de exibir as informações apenas no chat.
 - Adicionada comunicação cliente-servidor por payload de rede para transmitir os dados da interface.
 - Adicionado o registro do canal de rede `lotm_anchors:open_anchor_info` com protocolo `1`.
+- Atualizada a interface gráfica para exibir Âncoras únicas por grupo e por Sequence.
+- Adicionado o valor total de estabilidade, combinando Âncoras normais e Âncoras únicas.
+- Adicionada formatação de números com separadores de milhares para facilitar a leitura na interface.
+- Ajustado o layout da interface para utilizar duas colunas e acomodar as informações adicionais.
 
 ### Commits
 
+- [`9fad96f`](https://github.com/KawanVillar/LOTM-Anchors/commit/9fad96f323feadcea630e42d4ba9844e195ebb8e) — `feat: display unique anchors in anchor info screen`
+- [`f43b204`](https://github.com/KawanVillar/LOTM-Anchors/commit/f43b20436e7dc14b5cabb4416d3bd6ffbfb6e752) — `feat: implement Error avatar unique anchors and debug command`
 - [`61a7405`](https://github.com/KawanVillar/LOTM-Anchors/commit/61a74052834ba058bce5d245905b36827f774c54) — `feat: adicionado sistema de âncoras na interface e conexão via rede.`
 
 ## [0.1.3] - 2026-10-06
