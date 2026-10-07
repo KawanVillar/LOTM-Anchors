@@ -8,6 +8,7 @@ import com.kawan.lotmanchors.event.AdvancementStabilityHandler;
 import com.kawan.lotmanchors.event.AnchorDeathHandler;
 import com.kawan.lotmanchors.event.HonorificPrayerHandler;
 import com.kawan.lotmanchors.event.PlayerLifecycleHandler;
+import com.kawan.lotmanchors.network.AnchorNetwork;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -41,5 +42,6 @@ public final class LOTMAnchors {
         NeoForge.EVENT_BUS.register(new PlayerLifecycleHandler());
         NeoForge.EVENT_BUS.addListener(AnchorCommand::register);
         NeoForge.EVENT_BUS.register(new AnchorDeathHandler());
+        modBus.addListener(AnchorNetwork::register);
     }
 }
