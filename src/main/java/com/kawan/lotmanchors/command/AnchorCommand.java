@@ -9,6 +9,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import com.kawan.lotmanchors.anchor.UniqueAnchorManager;
 
 public final class AnchorCommand {
 
@@ -56,6 +57,76 @@ public final class AnchorCommand {
                                                                         )
                                                                 )
                                                         )
+                                        )
+                        )
+                        // /anchors debug avatars
+                        // /anchors debug avatars
+                        .then(
+                                Commands.literal("debug")
+                                        .requires(s -> s.hasPermission(2))
+                                        .then(
+                                                Commands.literal("avatars")
+                                                        .executes(ctx -> {
+                                                            ServerPlayer player =
+                                                                    ctx.getSource().getPlayerOrException();
+
+                                                            int[] counts =
+                                                                    UniqueAnchorManager.countErrorAvatarsBySequence(player);
+
+                                                            long uniqueAnchors =
+                                                                    UniqueAnchorManager.getErrorAvatarUniqueAnchors(player);
+
+                                                            player.sendSystemMessage(
+                                                                    net.minecraft.network.chat.Component.literal(
+                                                                            "§e[LOTM Anchors] Error Avatar Debug"
+                                                                    )
+                                                            );
+
+                                                            player.sendSystemMessage(
+                                                                    net.minecraft.network.chat.Component.literal(
+                                                                            "§7Sequence 1: §f"
+                                                                                    + counts[1]
+                                                                                    + " §7× 10,000 = §f"
+                                                                                    + ((long) counts[1] * 10_000L)
+                                                                    )
+                                                            );
+
+                                                            player.sendSystemMessage(
+                                                                    net.minecraft.network.chat.Component.literal(
+                                                                            "§7Sequence 2: §f"
+                                                                                    + counts[2]
+                                                                                    + " §7× 2,500 = §f"
+                                                                                    + ((long) counts[2] * 2_500L)
+                                                                    )
+                                                            );
+
+                                                            player.sendSystemMessage(
+                                                                    net.minecraft.network.chat.Component.literal(
+                                                                            "§7Sequence 3: §f"
+                                                                                    + counts[3]
+                                                                                    + " §7× 500 = §f"
+                                                                                    + ((long) counts[3] * 500L)
+                                                                    )
+                                                            );
+
+                                                            player.sendSystemMessage(
+                                                                    net.minecraft.network.chat.Component.literal(
+                                                                            "§7Sequence 4: §f"
+                                                                                    + counts[4]
+                                                                                    + " §7× 100 = §f"
+                                                                                    + ((long) counts[4] * 100L)
+                                                                    )
+                                                            );
+
+                                                            player.sendSystemMessage(
+                                                                    net.minecraft.network.chat.Component.literal(
+                                                                            "§aTotal Unique Anchors: §f"
+                                                                                    + uniqueAnchors
+                                                                    )
+                                                            );
+
+                                                            return 1;
+                                                        })
                                         )
                         )
 
