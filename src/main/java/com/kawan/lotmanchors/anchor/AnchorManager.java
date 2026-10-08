@@ -15,17 +15,54 @@ public final class AnchorManager {
         return player.getData(LOTMAnchors.ANCHOR_DATA);
     }
 
-    public static long getAnchors(ServerPlayer player) { return get(player).getTotalAnchors(); }
+    /**
+     * Returns only the normal Anchors stored in AnchorData.
+     */
+    public static long getNormalAnchors(ServerPlayer player) {
+        return get(player).getTotalAnchors();
+    }
+
+    /**
+     * Returns the total value of all Unique Anchors owned by the player.
+     */
+    public static long getUniqueAnchors(ServerPlayer player) {
+        return UniqueAnchorManager.getErrorAvatarUniqueAnchors(player)
+                + UniqueAnchorManager.getMarionetteUniqueAnchors(player)
+                + UniqueAnchorManager.getPersonaUniqueAnchors(player);
+    }
+
+    /**
+     * Returns the total Anchors available for stability.
+     *
+     * Total = Normal Anchors + Unique Anchors.
+     */
+    public static long getAnchors(ServerPlayer player) {
+        return getNormalAnchors(player) + getUniqueAnchors(player);
+    }
 
     public static void give(ServerPlayer player, long amount, String source) {
         if (amount <= 0) return;
+
         get(player).addAnchors(amount);
-        player.sendSystemMessage(Component.literal("§a[Anchors] +" + amount + " §7(" + source + ")"));
+
+        player.sendSystemMessage(
+                Component.literal(
+                        "§a[Anchors] +" + amount + " §7(" + source + ")"
+                )
+        );
     }
 
     public static long take(ServerPlayer player, long amount, String source) {
         long removed = get(player).removeAnchors(amount);
-        if (removed > 0) player.sendSystemMessage(Component.literal("§c[Anchors] -" + removed + " §7(" + source + ")"));
+
+        if (removed > 0) {
+            player.sendSystemMessage(
+                    Component.literal(
+                            "§c[Anchors] -" + removed + " §7(" + source + ")"
+                    )
+            );
+        }
+
         return removed;
     }
 
@@ -35,11 +72,13 @@ public final class AnchorManager {
 
     public static long requiredForNextAdvance(int currentSequence) {
         if (currentSequence < 1 || currentSequence > 4) return 0L;
+
         return AnchorConfig.requiredAnchors(currentSequence - 1);
     }
 
     public static long requiredForTargetSequence(int targetSequence) {
         if (targetSequence < 0 || targetSequence >= 4) return 0L;
+
         return AnchorConfig.requiredAnchors(targetSequence);
     }
 
@@ -48,18 +87,42 @@ public final class AnchorManager {
      * Seq. 4 has no anchor requirement. From Seq. 3 onward, use the configured
      * requirement for the target sequence.
      */
-    public static double failureChance(ServerPlayer player, int targetSequence) {
-        if (targetSequence >= 4 || targetSequence < 0) return 0.0D;
+    public static double failureChance(
+            ServerPlayer player,
+            int targetSequence
+    ) {
+        if (targetSequence >= 4 || targetSequence < 0) {
+            return 0.0D;
+        }
+
         long required = requiredForTargetSequence(targetSequence);
-        if (required <= 0) return 0.0D;
+
+        if (required <= 0) {
+            return 0.0D;
+        }
 
         long current = getAnchors(player);
-        if (current >= required) return 0.0D;
 
-        double deficitRatio = 1.0D - ((double) current / (double) required);
-        double chance = deficitRatio * AnchorConfig.failureMultiplier();
-        return Math.max(0.0D, Math.min(AnchorConfig.maxFailureChance(), chance));
+        if (current >= required) {
+            return 0.0D;
+        }
+
+        double deficitRatio =
+                1.0D - ((double) current / (double) required);
+
+        double chance =
+                deficitRatio * AnchorConfig.failureMultiplier();
+
+        return Math.max(
+                0.0D,
+                Math.min(
+                        AnchorConfig.maxFailureChance(),
+                        chance
+                )
+        );
     }
 
-    public static String key(UUID uuid) { return uuid.toString().toLowerCase(Locale.ROOT); }
+    public static String key(UUID uuid) {
+        return uuid.toString().toLowerCase(Locale.ROOT);
+    }
 }

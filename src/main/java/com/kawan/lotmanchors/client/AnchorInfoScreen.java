@@ -34,8 +34,8 @@ public final class AnchorInfoScreen extends Screen {
         int centerX = this.width / 2;
         int centerY = this.height / 2;
 
-        int boxWidth = 380;
-        int boxHeight = 240;
+        int boxWidth = 410;
+        int boxHeight = 260;
 
         int left = centerX - boxWidth / 2;
         int top = centerY - boxHeight / 2;
@@ -76,8 +76,8 @@ public final class AnchorInfoScreen extends Screen {
         // COLUMNS
         // =========================
 
-        int leftColumn = left + 12;
-        int rightColumn = left + 195;
+        int leftColumn = left + 15;
+        int rightColumn = left + 225;
 
         int y = top + 43;
 

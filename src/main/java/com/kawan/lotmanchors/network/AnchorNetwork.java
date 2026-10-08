@@ -59,7 +59,9 @@ public final class AnchorNetwork {
 
         // Calculate Unique Anchors currently possessed by the player.
         long uniqueAnchors =
-                UniqueAnchorManager.getErrorAvatarUniqueAnchors(target);
+                UniqueAnchorManager.getErrorAvatarUniqueAnchors(target)
+                        + UniqueAnchorManager.getMarionetteUniqueAnchors(target)
+                        + UniqueAnchorManager.getPersonaUniqueAnchors(target);
 
         // Normal Anchors + Unique Anchors.
         // This value is informational for the GUI for now.
@@ -72,10 +74,13 @@ public final class AnchorNetwork {
         int[] errorAvatarCounts =
                 UniqueAnchorManager.countErrorAvatarsBySequence(target);
 
+        long errorAvatarUniqueAnchors =
+                UniqueAnchorManager.getErrorAvatarUniqueAnchors(target);
+
         List<UniqueAnchorSequenceEntry> errorAvatarSequences =
                 new ArrayList<>();
 
-        for (int seq = 1; seq <= 4; seq++) {
+        for (int seq = 1; seq <= 6; seq++) {
 
             int count = errorAvatarCounts[seq];
 
@@ -102,6 +107,14 @@ public final class AnchorNetwork {
                         valuePerAvatar =
                                 AnchorConfig.errorAvatarSequence4Anchors();
 
+                case 5 ->
+                        valuePerAvatar =
+                                AnchorConfig.errorAvatarSequence5Anchors();
+
+                case 6 ->
+                        valuePerAvatar =
+                                AnchorConfig.errorAvatarSequence6Anchors();
+
                 default ->
                         valuePerAvatar = 0L;
             }
@@ -123,8 +136,176 @@ public final class AnchorNetwork {
             uniqueAnchorGroups.add(
                     new UniqueAnchorGroup(
                             "Error Avatars",
-                            uniqueAnchors,
+                            errorAvatarUniqueAnchors,
                             errorAvatarSequences
+                    )
+            );
+        }
+        int[] marionetteCounts =
+                UniqueAnchorManager.countMarionettesBySequence(target);
+
+        List<UniqueAnchorSequenceEntry> marionetteSequences =
+                new ArrayList<>();
+
+        for (int seq = 1; seq <= 9; seq++) {
+
+            int count = marionetteCounts[seq];
+
+            if (count <= 0) {
+                continue;
+            }
+
+            long valuePerMarionette;
+
+            switch (seq) {
+                case 1 ->
+                        valuePerMarionette =
+                                AnchorConfig.marionetteSequence1Anchors();
+
+                case 2 ->
+                        valuePerMarionette =
+                                AnchorConfig.marionetteSequence2Anchors();
+
+                case 3 ->
+                        valuePerMarionette =
+                                AnchorConfig.marionetteSequence3Anchors();
+
+                case 4 ->
+                        valuePerMarionette =
+                                AnchorConfig.marionetteSequence4Anchors();
+
+                case 5 ->
+                        valuePerMarionette =
+                                AnchorConfig.marionetteSequence5Anchors();
+
+                case 6 ->
+                        valuePerMarionette =
+                                AnchorConfig.marionetteSequence6Anchors();
+
+                case 7 ->
+                        valuePerMarionette =
+                                AnchorConfig.marionetteSequence7Anchors();
+
+                case 8 ->
+                        valuePerMarionette =
+                                AnchorConfig.marionetteSequence8Anchors();
+
+                case 9 ->
+                        valuePerMarionette =
+                                AnchorConfig.marionetteSequence9Anchors();
+
+                default ->
+                        valuePerMarionette = 0L;
+            }
+
+            long value =
+                    (long) count * valuePerMarionette;
+
+            marionetteSequences.add(
+                    new UniqueAnchorSequenceEntry(
+                            seq,
+                            count,
+                            value
+                    )
+            );
+        }
+
+        int nonBeyonderCount = marionetteCounts[10];
+
+        if (nonBeyonderCount > 0) {
+
+            long valuePerMarionette =
+                    AnchorConfig.marionetteNonBeyonderAnchors();
+
+            long value =
+                    (long) nonBeyonderCount * valuePerMarionette;
+
+            marionetteSequences.add(
+                    new UniqueAnchorSequenceEntry(
+                            10,
+                            nonBeyonderCount,
+                            value
+                    )
+            );
+        }
+
+        if (!marionetteSequences.isEmpty()) {
+
+            long marionetteUniqueAnchors =
+                    UniqueAnchorManager.getMarionetteUniqueAnchors(target);
+
+            uniqueAnchorGroups.add(
+                    new UniqueAnchorGroup(
+                            "Marionettes",
+                            marionetteUniqueAnchors,
+                            marionetteSequences
+                    )
+            );
+        }
+
+        int[] personaCounts =
+                UniqueAnchorManager.countPersonasBySequence(target);
+
+        List<UniqueAnchorSequenceEntry> personaSequences =
+                new ArrayList<>();
+
+        for (int seq = 1; seq <= 5; seq++) {
+
+            int count = personaCounts[seq];
+
+            if (count <= 0) {
+                continue;
+            }
+
+            long valuePerPersona;
+
+            switch (seq) {
+                case 1 ->
+                        valuePerPersona =
+                                AnchorConfig.personaSequence1Anchors();
+
+                case 2 ->
+                        valuePerPersona =
+                                AnchorConfig.personaSequence2Anchors();
+
+                case 3 ->
+                        valuePerPersona =
+                                AnchorConfig.personaSequence3Anchors();
+
+                case 4 ->
+                        valuePerPersona =
+                                AnchorConfig.personaSequence4Anchors();
+
+                case 5 ->
+                        valuePerPersona =
+                                AnchorConfig.personaSequence5Anchors();
+
+                default ->
+                        valuePerPersona = 0L;
+            }
+
+            long value =
+                    (long) count * valuePerPersona;
+
+            personaSequences.add(
+                    new UniqueAnchorSequenceEntry(
+                            seq,
+                            count,
+                            value
+                    )
+            );
+        }
+
+        if (!personaSequences.isEmpty()) {
+
+            long personaUniqueAnchors =
+                    UniqueAnchorManager.getPersonaUniqueAnchors(target);
+
+            uniqueAnchorGroups.add(
+                    new UniqueAnchorGroup(
+                            "Personas",
+                            personaUniqueAnchors,
+                            personaSequences
                     )
             );
         }
@@ -140,8 +321,12 @@ public final class AnchorNetwork {
                             sequence - 1
                     );
 
-            if (anchors < required) {
-                missing = required - anchors;
+            // Normal Anchors + Unique Anchors.
+            long totalAnchors =
+                    anchors + uniqueAnchors;
+
+            if (totalAnchors < required) {
+                missing = required - totalAnchors;
             }
 
             risk =
