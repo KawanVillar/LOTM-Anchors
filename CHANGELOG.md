@@ -4,6 +4,30 @@ Todas as alterações relevantes deste projeto estão documentadas neste arquivo
 
 O formato segue uma organização cronológica inversa, com base no histórico de commits do repositório.
 
+## [Unreleased] - 2026-10-08
+
+### Adicionado
+
+- Adicionado suporte a Âncoras únicas geradas por Marionettes do pathway Fool, abrangendo as Sequences 1 a 9 e personagens não-Beyonder.
+- Adicionado suporte a Âncoras únicas geradas por Personas do pathway Visionary, abrangendo as Sequences 1 a 5.
+- Adicionadas configurações de servidor para definir os valores de Âncoras únicas de Marionettes e Personas.
+- Adicionadas configurações para Âncoras únicas de Avatares do Error nas Sequences 5 e 6.
+
+### Alterado
+
+- Atualizado o cálculo de estabilidade total para incluir Âncoras normais e Âncoras únicas.
+- Atualizado o cálculo do risco de avanço para considerar a estabilidade fornecida pelas Âncoras únicas.
+- Ajustado o layout da `AnchorInfoScreen` para acomodar os novos grupos de Âncoras únicas.
+- Removido o comando de debug `/anchors` usado para consultar Avatares do Error.
+
+### Configuração
+
+- Atualizado o arquivo de configuração do servidor com opções para Avatares do Error, Marionettes e Personas.
+
+### Commit
+
+- [`437467a`](https://github.com/KawanVillar/LOTM-Anchors/commit/437467aba313c352908771e0143898215ad93d1c) — `feat: implement marionette and persona unique anchors`
+
 ## [0.1.4] - 2026-10-07
 
 ### Adicionado
@@ -13,7 +37,7 @@ O formato segue uma organização cronológica inversa, com base no histórico d
 - Adicionadas configurações para definir a quantidade de Âncoras únicas concedidas por Avatar do Error de cada Sequence.
 - Adicionado o comando `/anchors debug avatars`, disponível para operadores, para consultar a quantidade de Avatares do Error e o total de Âncoras únicas calculadas.
 - Adicionada uma interface gráfica de informações para consultar as Âncoras de um jogador.
-- A interface exibe o pathway, Sequence, nome da Sequence, quantidade atual de Âncoras, requisitos para o próximo avanço, Âncoras faltantes, risco adicional, Âncoras obtidas ao longo da vida e Âncoras perdidas.
+- A interface exibe o pathway, Sequence, nome da Sequence, quantidade atual de Âncoras, requisitos para o próximo avanço, Âncoras faltantes, risco adicional, Âncoras obtidas ao longo da vida e informações de Âncoras únicas.
 - Adicionado o comando `/anchors info` para abrir a interface do próprio jogador.
 - Adicionada a opção `/anchors info <player>` para consultar a interface de outro jogador, disponível para operadores.
 - O comando `/anchors` agora abre diretamente a interface gráfica em vez de exibir as informações apenas no chat.
