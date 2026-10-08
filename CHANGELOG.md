@@ -1,5 +1,16 @@
 # Changelog
 
+## [Unreleased]
+
+### Documentação, colaboração e CI
+
+- Adicionado `.github/CODEOWNERS` com revisão padrão por `@KawanVillar`.
+- Adicionado workflow de CI em `.github/workflows/build.yml` para executar `./gradlew build` em `push` para `master` e em `pull_request`, com Java 21 e cache de Gradle sem uso de secrets.
+- Adicionados `CONTRIBUTING.md` e `SECURITY.md` em português, com orientações de contribuição e reporte responsável de segurança.
+- Adicionados templates de issue (bug report, feature request e compatibility issue) e template de Pull Request.
+- Atualizado o `README.md` com badges, aviso de alpha/licença proprietária, separação entre instalação de jogador e setup de desenvolvimento, seção de contribuição e seção dedicada a limitações de compatibilidade com Mixins/APIs internas.
+- Adicionado `docs/example-server-config.toml` com exemplo documentado baseado nos valores padrão de `AnchorConfig.java`.
+
 Todas as alterações relevantes deste projeto estão documentadas neste arquivo.
 
 O formato segue uma organização cronológica inversa, com base no histórico de commits do repositório.

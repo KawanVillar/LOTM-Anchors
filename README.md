@@ -1,10 +1,15 @@
 # LOTM Anchors
 
+[![Build](https://github.com/KawanVillar/LOTM-Anchors/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/KawanVillar/LOTM-Anchors/actions/workflows/build.yml)
+[![Licença](https://img.shields.io/badge/licen%C3%A7a-All%20Rights%20Reserved-red)](LICENSE)
+
+> ⚠️ **Status:** projeto em **alpha** (MVP), com regras de balanceamento ainda provisórias.
+>
+> 🔒 **Licença:** este repositório é **proprietário (All Rights Reserved)**. Consulte `LICENSE` antes de copiar, modificar ou redistribuir.
+
 Addon NeoForge para Minecraft 1.21.1 integrado ao LOTMCraft.
 
 O LOTM Anchors adiciona um sistema de **Âncoras** persistentes por jogador, usado para representar estabilidade durante o avanço de Sequences. O addon também integra recompensas por quests, orações através de Nomes Honoríficos e um sistema opcional de perda de Âncoras após longos períodos offline.
-
-> **Status:** MVP `0.1.0-alpha` — as regras de balanceamento ainda são provisórias.
 
 ## Requisitos
 
@@ -21,6 +26,14 @@ O JAR usado para compilação está incluído em:
 ```text
 libs/lotmcraft-1.13.0.jar
 ```
+
+Essa é uma dependência local do projeto. Qualquer redistribuição deve respeitar a licença e a origem desse artefato.
+
+## Instalação para jogadores
+
+1. Compile o projeto (ou obtenha um build confiável compatível).
+2. Copie o JAR gerado em `build/libs/` para a pasta `mods`.
+3. Garanta que o ambiente usa versões compatíveis de Minecraft, NeoForge e LOTMCraft.
 
 ## Instalação para desenvolvimento
 
@@ -94,8 +107,6 @@ No Windows:
 gradlew.bat runGameTestServer
 ```
 
-Para testar o JAR em uma instalação normal do Minecraft, copie o arquivo gerado em `build/libs/` para a pasta `mods` junto com o NeoForge e o LOTMCraft compatíveis.
-
 ## Funcionalidades implementadas
 
 - Dados persistentes de Âncoras por jogador usando Attachments do NeoForge;
@@ -144,6 +155,12 @@ As opções principais incluem:
 - `offline_decay.percent_per_day`: percentual de perda configurado;
 - `offline_decay.interval_hours`: intervalo de aplicação da perda.
 
+Exemplo documentado de configuração:
+
+```text
+docs/example-server-config.toml
+```
+
 A perda por tempo offline fica desativada por padrão enquanto as regras do servidor ainda estão em desenvolvimento.
 
 A fórmula atual do risco adicional é:
@@ -165,6 +182,8 @@ O desenvolvimento e os testes são direcionados para:
 | Java | 21 |
 | LOTMCraft | 1.13.0 |
 | Gradle Wrapper | Gradle 8.8 |
+
+## Compatibilidade e limitações de Mixins/APIs internas
 
 O projeto compila contra o arquivo local `libs/lotmcraft-1.13.0.jar`.
 
@@ -193,11 +212,15 @@ settings.gradle                 Configuração do projeto Gradle
 
 Os diretórios `build/`, `.gradle/`, `run/` e arquivos gerados pelo ambiente de desenvolvimento não devem ser versionados.
 
+## Contribuição
+
+Consulte [CONTRIBUTING.md](CONTRIBUTING.md) para fluxo de branches, testes obrigatórios, atualização de changelog e cuidados com Mixins/APIs internas do LOTMCraft.
+
 ## Limitações atuais
 
 - O projeto ainda está em fase MVP/alpha;
 - o balanceamento das Âncoras é provisório;
-- a GUI `/anchors` ainda não foi implementada;
+- a interface `/anchors` ainda está em evolução e pode mudar entre versões alpha;
 - o histórico detalhado de transações ainda não foi implementado;
 - o sistema de `AnchorSource` ainda não foi separado para quests, NPCs, jogadores e outras fontes;
 - quests próprias do addon ainda não foram implementadas;
@@ -211,7 +234,7 @@ Os diretórios `build/`, `.gradle/`, `run/` e arquivos gerados pelo ambiente de 
 - criar quests próprias do addon;
 - finalizar as regras de Âncoras por Sequence;
 - revisar o balanceamento de orações e recompensas;
-- adicionar uma GUI para consulta de Âncoras;
+- expandir a GUI para consulta detalhada de Âncoras;
 - implementar histórico de transações;
 - avaliar integração nativa com CustomNPCs.
 

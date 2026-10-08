@@ -1,0 +1,41 @@
+# Exemplo de configuração do servidor para LOTM Anchors
+# Baseado nos valores padrão de:
+# src/main/java/com/kawan/lotmanchors/config/AnchorConfig.java
+
+[anchors]
+required_sequence_3 = 1000
+required_sequence_2 = 3000
+required_sequence_1 = 10000
+required_sequence_0 = 30000
+failure_multiplier = 1.0
+max_failure_chance = 1.0
+prayer_reward = 1
+quest_repeat_multiplier = 0.6
+prayer_cooldown_minutes = 60
+announce_prayer_reward = true
+
+[unique_anchors.error_avatars]
+sequence_1 = 10000
+sequence_2 = 2500
+sequence_3 = 500
+sequence_4 = 100
+
+[quests]
+kill_zombies = 25
+defend_village = 100
+kill_tyrant_seq4 = 250
+kill_seq4 = 250
+kill_seq3 = 500
+kill_seq2 = 1000
+kill_seq1 = 2000
+collect_low_seq_characteristics = 200
+find_random_structures = 100
+kill_player_target = 300
+help_beyonder = 150
+deliver_item = 50
+
+[offline_decay]
+enabled = false
+grace_hours = 72
+percent_per_day = 2.0
+interval_hours = 24
