@@ -37,8 +37,27 @@ mixin {
 
 dependencies {
     implementation "net.neoforged:neoforge:${neo_version}"
-    implementation files("${rootDir}/libs/lotmcraft-1.13.0.jar")
+    implementation files("${rootDir}/libs/lotmcraft-${lotm_version}.jar")
 }
+
+def validateLotmDependency = tasks.register('validateLotmDependency') {
+    def lotmJar = layout.projectDirectory.file("libs/lotmcraft-${lotm_version}.jar")
+    inputs.file(lotmJar)
+    doLast {
+        def archive = new java.util.zip.ZipFile(lotmJar.asFile)
+        try {
+            if (archive.getEntry('de/jakob/lotm/util/BeyonderData.class') == null) {
+                def classCount = archive.stream().filter { entry -> entry.name.endsWith('.class') }.count()
+                throw new GradleException("LOTMCraft ${lotm_version}: BeyonderData.class missing from ${lotmJar.asFile}. Java classes in JAR: ${classCount}. Replace it with the complete mod JAR for the version configured in lotm_version.")
+            }
+        } finally {
+            archive.close()
+        }
+    }
+}
+
+tasks.named('compileJava') { dependsOn validateLotmDependency }
+tasks.named('processResources') { dependsOn validateLotmDependency }
 
 tasks.withType(ProcessResources).configureEach {
     var replaceProperties = [
@@ -59,10 +78,80 @@ tasks.withType(ProcessResources).configureEach {
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
-// Cria um texto com a data e hora atual
+
+tasks.register('testTeamAnchorRules', JavaExec) {
+    group = 'verification'
+    description = 'Checks Team anchor validation without launching Minecraft.'
+    dependsOn tasks.named('testClasses')
+    classpath = files(sourceSets.main.output.classesDirs, sourceSets.test.output.classesDirs)
+    mainClass = 'com.kawan.lotmanchors.anchor.TeamAnchorRulesTest'
+    javaLauncher = javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(21) }
+}
+tasks.named('check') { dependsOn tasks.named('testTeamAnchorRules') }
+
+tasks.register('testFollowerBook', JavaExec) {
+    group = 'verification'
+    description = 'Checks prayer invitations and follower consent without Minecraft.'
+    dependsOn tasks.named('testClasses')
+    classpath = files(sourceSets.main.output.classesDirs, sourceSets.test.output.classesDirs)
+    mainClass = 'com.kawan.lotmanchors.anchor.FollowerBookTest'
+    javaLauncher = javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(21) }
+}
+tasks.named('check') { dependsOn tasks.named('testFollowerBook') }
+
+tasks.register('testFollowerData', JavaExec) {
+    group = 'verification'
+    description = 'Checks follower SavedData NBT without opening a world.'
+    dependsOn tasks.named('testClasses')
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.kawan.lotmanchors.anchor.FollowerDataTest'
+    javaLauncher = javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(21) }
+}
+tasks.named('check') { dependsOn tasks.named('testFollowerData') }
+
+tasks.register('testAnchorSourcesPanel', JavaExec) {
+    group = 'verification'
+    description = 'Checks panel permissions, test fixtures and packet codecs without multiplayer.'
+    dependsOn tasks.named('testClasses')
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.kawan.lotmanchors.anchor.AnchorSourcesPanelTest'
+    javaLauncher = javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(21) }
+}
+tasks.named('check') { dependsOn tasks.named('testAnchorSourcesPanel') }
+
+tasks.register('testAnchorScreens', JavaExec) {
+    group = 'verification'
+    description = 'Checks blur render order and layouts across GUI scales without launching Minecraft.'
+    dependsOn tasks.named('testClasses')
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.kawan.lotmanchors.anchor.AnchorScreenTest'
+    javaLauncher = javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(21) }
+}
+tasks.named('check') { dependsOn tasks.named('testAnchorScreens') }
+
+tasks.register('testAnchorConfig', JavaExec) {
+    group = 'verification'
+    description = 'Checks generated TOML, preservation of existing values, and offline decay.'
+    dependsOn tasks.named('testClasses')
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.kawan.lotmanchors.anchor.AnchorConfigTest'
+    javaLauncher = javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(21) }
+}
+tasks.named('check') { dependsOn tasks.named('testAnchorConfig') }
+
+tasks.register('testAnchorSanity', JavaExec) {
+    group = 'verification'
+    description = 'Checks sanity pressure, grace periods, native ceiling and status packets without Minecraft.'
+    dependsOn tasks.named('testClasses')
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.kawan.lotmanchors.anchor.AnchorSanityTest'
+    javaLauncher = javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(21) }
+}
+tasks.named('check') { dependsOn tasks.named('testAnchorSanity') }
+// Append a build timestamp to the output JAR name.
 def timestamp = new Date().format("MMdd_HHmm")
 
-// Modifica a tarefa de geração do .jar para incluir o timestamp no nome
+// Keep the declared mod version unchanged in NeoForge metadata.
 tasks.withType(Jar) {
     archiveVersion.set("${project.version}-${timestamp}")
 }

@@ -1,32 +1,56 @@
 # Changelog
 
-Todas as alterações relevantes deste projeto estão documentadas neste arquivo.
+Alteracoes relevantes do LOTM Anchors. As entradas anteriores documentam o historico;
+a secao Unreleased descreve o estado que sera publicado no proximo commit.
 
-O formato segue uma organização cronológica inversa, com base no histórico de commits do repositório.
+## [Unreleased] - 2026-11-05
 
-## [Unreleased] - 2026-10-08
+### Dependencia e repositorio
 
-### Adicionado
+- Atualizado para LOTMCraft 1.13.3 completo; versao centralizada no Gradle e metadados.
+- Validacao de `BeyonderData.class` antes da compilacao e processamento de recursos.
+- JAR do mod principal deixa de ser versionado; instrucoes em `libs/README.md`.
+- Regras de Git para excluir caches, IDEs, logs, mundos e artefatos de build.
 
-- Adicionado suporte a Âncoras únicas geradas por Marionettes do pathway Fool, abrangendo as Sequences 1 a 9 e personagens não-Beyonder.
-- Adicionado suporte a Âncoras únicas geradas por Personas do pathway Visionary, abrangendo as Sequences 1 a 5.
-- Adicionadas configurações de servidor para definir os valores de Âncoras únicas de Marionettes e Personas.
-- Adicionadas configurações para Âncoras únicas de Avatares do Error nas Sequences 5 e 6.
+### Fe e fontes de ancoras
 
-### Alterado
+- Oracao nativa integrada a convites com consentimento, expiracao e protecao contra reutilizacao.
+- Um patrono por fiel; `/faith leave` e `/faith remove` encerram vinculos.
+- Contribuicao por Sequence, persistencia da ultima Sequence/nome para fieis offline.
+- Red Priest Team com validacao reciproca, limites nativos e deduplicacao por UUID.
+- NPCs subordinados carregados preservam contribuicao apos regressao para Sequence 4,
+  enquanto o controlador continuar Red Priest.
+- Fontes exclusivas de Error, Fool e Visionary coletadas em conjunto com o painel
+  e o calculo de estabilidade, sem creditos permanentes no saldo normal.
 
-- Atualizado o cálculo de estabilidade total para incluir Âncoras normais e Âncoras únicas.
-- Atualizado o cálculo do risco de avanço para considerar a estabilidade fornecida pelas Âncoras únicas.
-- Ajustado o layout da `AnchorInfoScreen` para acomodar os novos grupos de Âncoras únicas.
-- Removido o comando de debug `/anchors` usado para consultar Avatares do Error.
+### Interface e historico
 
-### Configuração
+- Painel Sources por pathway com ordenacao da Sequence mais forte para a mais fraca,
+  paginacao, tooltips e confirmacao de remocao de fieis.
+- Corrigido desfoque sobre o conteudo e layout para diferentes escalas de GUI.
+- Textos do addon em ingles; dados ficticios removidos da distribuicao e mantidos somente nos testes.
+- Tela History com 32 registros persistentes por jogador, sem novos avisos no chat.
+- Mudancas nos totais das fontes unicas precisam persistir por 30 segundos para serem registradas.
+- Back to sources retorna localmente, preservando aba/pagina, sem depender de resposta do servidor pausado.
+- Protocolo de rede atual: **7**. Cliente e servidor precisam da mesma versao do addon.
 
-- Atualizado o arquivo de configuração do servidor com opções para Avatares do Error, Marionettes e Personas.
+### Sanidade e configuracao
 
-### Commit
+- Integracao opcional com a sanidade nativa, desativada por padrao, para deficit nas Sequences 3 a 0.
+- Teto proporcional ao deficit e ao maximo nativo, queda gradual e tolerancias de entrada,
+  respawn, mudanca de Sequence e deficit continuo. Sem cura automatica ou drenagem abaixo do teto pelo addon.
+- Avisos por estagio e previa dos requisitos/deficit/teto da proxima Sequence no resumo.
+- TOML organizado em secoes, com unidades e exemplos em ingles, preservando chaves ativas.
+- Removidas quatro opcoes obsoletas de oracao sem efeito.
+- Perda offline agora respeita percentual diario e intervalo configurados; continua opcional.
+- Exemplo TOML gerado pela definicao real do NeoForge.
 
-- [`437467a`](https://github.com/KawanVillar/LOTM-Anchors/commit/437467aba313c352908771e0143898215ad93d1c) — `feat: implement marionette and persona unique anchors`
+### Verificacao
+
+- Testes de Team, consentimento, NBT, historico, codecs, permissoes, layout, TOML,
+  perda offline e sanidade incluidos em `check` e `build`.
+- Testes solo de fontes unicas e persistencia informados pelo autor.
+- Fluxo completo de fe entre jogadores ainda pendente de validacao multiplayer.
 
 ## [0.1.4] - 2026-10-07
 

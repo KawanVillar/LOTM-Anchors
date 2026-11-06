@@ -26,9 +26,7 @@ public final class AnchorManager {
      * Returns the total value of all Unique Anchors owned by the player.
      */
     public static long getUniqueAnchors(ServerPlayer player) {
-        return UniqueAnchorManager.getErrorAvatarUniqueAnchors(player)
-                + UniqueAnchorManager.getMarionetteUniqueAnchors(player)
-                + UniqueAnchorManager.getPersonaUniqueAnchors(player);
+        return AnchorSourceService.all(player).stream().mapToLong(AnchorSourceRow::value).sum();
     }
 
     /**
@@ -91,6 +89,10 @@ public final class AnchorManager {
             ServerPlayer player,
             int targetSequence
     ) {
+        return failureChance(getAnchors(player), targetSequence);
+    }
+
+    public static double failureChance(long current, int targetSequence) {
         if (targetSequence >= 4 || targetSequence < 0) {
             return 0.0D;
         }
@@ -100,8 +102,6 @@ public final class AnchorManager {
         if (required <= 0) {
             return 0.0D;
         }
-
-        long current = getAnchors(player);
 
         if (current >= required) {
             return 0.0D;

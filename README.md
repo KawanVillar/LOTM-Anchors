@@ -1,220 +1,172 @@
 # LOTM Anchors
 
-Addon NeoForge para Minecraft 1.21.1 integrado ao LOTMCraft.
+Addon para **Minecraft 1.21.1 / NeoForge**, integrado ao **LOTMCraft 1.13.3**.
+Interface, mensagens e comentarios da configuracao em ingles.
 
-O LOTM Anchors adiciona um sistema de **Âncoras** persistentes por jogador, usado para representar estabilidade durante o avanço de Sequences. O addon também integra recompensas por quests, orações através de Nomes Honoríficos e um sistema opcional de perda de Âncoras após longos períodos offline.
+Versao atual: **0.1.4**, em desenvolvimento. Balanceamento configuravel.
 
-> **Status:** MVP `0.1.0-alpha` — as regras de balanceamento ainda são provisórias.
+## Funcionalidades
 
-## Requisitos
+- Ancoras persistentes e estabilidade para o avanco de Sequences, usando o sistema nativo de falha.
+- Recompensas por quests, com protecao contra repeticao conforme configuracao.
+- Fe integrada a oracao por nomes honorificos: o destinatario convida e o orador aceita ou recusa.
+- Contribuicao dos fieis ponderada pela propria Sequence; ultima Sequence conhecida preservada offline.
+- Fontes unicas por pathway: Red Priest Team/NPCs, Error avatars, Fool marionettes e Visionary virtual personas.
+- Painel `/anchors sources` com categorias por pathway, ordenacao por Sequence mais forte, paginacao e detalhes ao passar o mouse.
+- Remocao de fieis com confirmacao; as entidades do mod principal sao somente de consulta.
+- Historico persistente com os ultimos 32 eventos, em tela separada e sem avisos extras no chat.
+- Pressao opcional sobre a sanidade nativa quando faltam ancoras, com tolerancias e avisos por estagio.
+- Previa de requisitos, deficit, risco adicional e teto de sanidade da proxima Sequence.
+- Perda offline opcional, proporcional ao percentual diario e ao tempo configurados.
 
-- Java Development Kit (JDK) 21;
-- Git;
-- Minecraft 1.21.1;
-- NeoForge 21.1.217 ou superior;
-- LOTMCraft 1.13.0;
-- IntelliJ IDEA ou VS Code com suporte a Gradle, opcionalmente;
-- acesso à internet no primeiro build para baixar dependências do Gradle, NeoForge e Minecraft.
+As contribuicoes dinamicas sao recalculadas; nao sao creditadas permanentemente
+no saldo de ancoras normais. Fontes descarregadas podem deixar de contribuir.
 
-O JAR usado para compilação está incluído em:
+## Requisitos e build
 
-```text
-libs/lotmcraft-1.13.0.jar
-```
+- JDK 21.
+- LOTMCraft **1.13.3 completo**, baixado separadamente.
+- Internet no primeiro build para baixar Gradle, NeoForge e Minecraft.
 
-## Instalação para desenvolvimento
-
-Clone o repositório e entre na pasta do projeto:
-
-```bash
+```powershell
 git clone https://github.com/KawanVillar/LOTM-Anchors.git
 cd LOTM-Anchors
 ```
 
-Abra a pasta no IntelliJ IDEA ou no VS Code e importe o projeto como um projeto Gradle.
+Coloque o mod em `libs/lotmcraft-1.13.3.jar`. Veja [libs/README.md](libs/README.md).
+Nao basta um patch contendo somente recursos: `validateLotmDependency` verifica
+se o arquivo contem `BeyonderData.class`.
 
-### Windows
-
-```bat
-gradlew.bat clean build
+```powershell
+.\gradlew.bat build
 ```
 
-### Linux/macOS
+No Linux/macOS, use `./gradlew build` com Java 21. O primeiro build pode demorar
+para preparar o ambiente Minecraft. Os JARs ficam em `build/libs/`.
+O nome inclui a versao e um timestamp de compilacao.
 
-Depois de renomear o wrapper Unix para `gradlew`, caso necessário, conceda permissão de execução:
-
-```bash
-chmod +x gradlew
-./gradlew clean build
-```
-
-O JAR compilado será gerado em:
-
-```text
-build/libs/
-```
-
-## Execução do ambiente de desenvolvimento
-
-O projeto possui configurações Gradle para cliente, servidor dedicado e GameTest Server.
-
-### Cliente
-
-```bash
-./gradlew runClient
-```
-
-No Windows:
-
-```bat
-gradlew.bat runClient
-```
-
-### Servidor dedicado
-
-```bash
-./gradlew runServer
-```
-
-No Windows:
-
-```bat
-gradlew.bat runServer
-```
-
-### GameTest Server
-
-```bash
-./gradlew runGameTestServer
-```
-
-No Windows:
-
-```bat
-gradlew.bat runGameTestServer
-```
-
-Para testar o JAR em uma instalação normal do Minecraft, copie o arquivo gerado em `build/libs/` para a pasta `mods` junto com o NeoForge e o LOTMCraft compatíveis.
-
-## Funcionalidades implementadas
-
-- Dados persistentes de Âncoras por jogador usando Attachments do NeoForge;
-- comandos administrativos para conceder, remover e definir Âncoras;
-- consulta de pathway, Sequence, quantidade de Âncoras e risco adicional;
-- requisitos configuráveis para avanço às Sequences 3, 2, 1 e 0;
-- integração com `BeyonderData.getPathway` e `BeyonderData.getSequence` do LOTMCraft;
-- integração com `StartAdvanceSequencePathwayEvent`;
-- aumento do risco de falha quando o jogador possui menos Âncoras que o requisito configurado;
-- integração com orações por Nome Honorífico;
-- cooldown por adorador e alvo para impedir farming por spam;
-- recompensas por quests do LOTMCraft através do sistema de integração do addon;
-- perda opcional de Âncoras por tempo offline, desativada por padrão.
+Instale o addon e o LOTMCraft na pasta `mods` do cliente e do servidor.
+Cliente e servidor precisam da mesma versao do addon: **protocolo 7**.
+Nao inclua `libs/`, caches, instancias de teste ou JARs gerados no commit.
+O Gradle Wrapper, incluindo seu JAR, faz parte do repositorio.
 
 ## Comandos
 
-| Comando | Permissão | Descrição |
-|---|---:|---|
-| `/anchors` | Jogador | Mostra suas Âncoras, Sequence, requisito seguinte e risco adicional. |
-| `/anchors check <player>` | Jogador | Consulta os dados de outro jogador. |
-| `/anchors give <player> <amount>` | OP nível 2 | Concede Âncoras ao jogador. |
-| `/anchors take <player> <amount>` | OP nível 2 | Remove Âncoras do jogador. |
-| `/anchors set <player> <amount>` | OP nível 2 | Define diretamente a quantidade de Âncoras. |
+| Comando | Funcao |
+| --- | --- |
+| `/anchors` | Resumo de estabilidade |
+| `/anchors sources` | Fontes, vinculos e acesso a History |
+| `/anchors info <player>` | Consultar outro jogador; operador nivel 2 |
+| `/anchors give <player> <amount>` | Adicionar ancoras normais; operador nivel 2 |
+| `/anchors take <player> <amount>` | Remover ancoras normais; operador nivel 2 |
+| `/anchors set <player> <amount>` | Definir ancoras normais; operador nivel 2 |
+| `/faith` | Consultar vinculos de fe |
+| `/faith leave` | Encerrar o proprio vinculo como fiel |
+| `/faith remove <UUID>` | Remover um dos seus fieis |
 
-## Configuração
+Convites e respostas usam os botoes enviados no chat apos a oracao nativa.
+O vinculo so concede contribuicao apos consentimento; cada fiel tem um patrono.
+A consulta de outro jogador e restrita a operadores. Remover fieis pelo painel
+exige ser o proprio dono do vinculo, mesmo para operadores.
 
-Depois que o servidor iniciar, o arquivo de configuração será criado em:
+## Configuracao
 
-```text
-config/lotm_anchors-server.toml
+O arquivo SERVER fica em `<world>/serverconfig/lotm_anchors-server.toml`.
+Use `defaultconfigs/` para definir valores iniciais de mundos novos.
+Nao e necessario apagar configuracoes existentes para atualizar.
+
+[examples/lotm_anchors-server.toml](examples/lotm_anchors-server.toml) e um exemplo
+gerado pela propria definicao NeoForge. As regras sao globais por mundo/servidor;
+valores de fontes especiais podem ser ajustados por categoria e Sequence.
+
+| Secao | Conteudo |
+| --- | --- |
+| `[anchors]` | Requisitos de estabilidade, risco e convites |
+| `[follower_values]` | Contribuicao por Sequence dos fieis |
+| `[unique_anchors]` e subsecoes | Avatares, marionetes, personas e subordinados |
+| `[quests]` | Recompensas e regras de quests |
+| `[offline_decay]` | Perda offline opcional |
+| `[anchor_sanity]` e `[anchor_sanity.max_penalty]` | Sanidade, tolerancias e penalidades |
+
+### Sanidade
+
+Desativada por padrao. Para ativar, altere no TOML do mundo e reinicie:
+
+```toml
+[anchor_sanity]
+enabled = true
 ```
 
-As opções principais incluem:
+Nas Sequences 3 a 0, o deficit proporcional reduz gradualmente o teto de sanidade.
+Com zero ancoras, os tetos padrao sao 85%, 70%, 50% e 35% do maximo nativo,
+respectivamente. Metade das ancoras exigidas aplica metade da penalidade.
 
-- `required_sequence_3`: Âncoras necessárias para avançar à Sequence 3;
-- `required_sequence_2`: Âncoras necessárias para avançar à Sequence 2;
-- `required_sequence_1`: Âncoras necessárias para avançar à Sequence 1;
-- `required_sequence_0`: Âncoras necessárias para avançar à Sequence 0;
-- `failure_multiplier`: multiplicador aplicado ao déficit de Âncoras;
-- `max_failure_chance`: limite máximo do risco adicional;
-- `prayer_reward`: recompensa por oração válida;
-- `prayer_cooldown_minutes`: cooldown por adorador e alvo;
-- `announce_prayer_reward`: informa ao adorador quando a oração é reconhecida;
-- `offline_decay.enabled`: ativa ou desativa a perda por ausência prolongada;
-- `offline_decay.grace_hours`: período de tolerância antes da perda;
-- `offline_decay.percent_per_day`: percentual de perda configurado;
-- `offline_decay.interval_hours`: intervalo de aplicação da perda.
+O requisito e o da **Sequence atual**. O addon nao cura nem reduz sanidade que ja
+esteja abaixo do teto; o mod principal continua podendo aplicar seus proprios efeitos.
+A reducao usa o setter sincronizado nativo como limite estrutural, sem reaplicar
+os multiplicadores de dano de sanidade. Recuperar ancoras libera a restricao,
+mas a recuperacao de sanidade continua a cargo do mod principal.
 
-A perda por tempo offline fica desativada por padrão enquanto as regras do servidor ainda estão em desenvolvimento.
+Padroes: checagem a cada 5 segundos, tolerancia inicial de 120 segundos apos
+entrada/respawn/mudanca de Sequence e mais 30 segundos de deficit continuo.
+Tempos usam a simulacao do servidor; nao ha pressao offline. Criativo e espectador
+ficam isentos. `announce_pressure` controla os avisos por estagio.
+A previa de avanco usa as fontes e o maximo nativo atuais; ambos podem mudar apos avancar.
 
-A fórmula atual do risco adicional é:
+### Historico
 
-```text
-risco = (1 - âncoras atuais / âncoras necessárias) * failure_multiplier
+O botao **History** abre os ultimos 32 eventos, mais recentes primeiro.
+Registra aceite/encerramento de vinculos, mudancas de contribuicao por Sequence
+dos fieis e alteracoes observadas nos totais das categorias de fontes unicas.
+
+Fontes unicas sao observadas a cada 5 segundos; o novo total precisa persistir
+por 30 segundos. O primeiro levantamento apos entrada/respawn/reinicio e silencioso.
+O historico nao atribui causas como morte ou exclusao a uma entidade que deixou
+de contribuir. Nao recupera eventos anteriores a instalacao desta versao.
+Os horarios usam o fuso do cliente. **Back to sources** retorna localmente,
+preservando a aba e a pagina; **Refresh** busca dados atuais do servidor.
+
+## Regras das fontes unicas
+
+- **Red Priest:** Team de jogadores online e vivos, com vinculos nativos reciprocos
+  e limite de membros respeitado. NPCs usam a subordinacao nativa e precisam estar
+  carregados e vivos. Regressao para Sequence 4 preserva a contribuicao de NPCs
+  com vinculo valido; o dono precisa continuar Red Priest.
+- **Error:** avatares carregados com dono original confirmado.
+- **Fool:** marionetes carregadas com controlador nativo confirmado.
+- **Visionary:** personas mentais em hospedeiros online e avatares registrados.
+  Avatares registrados indisponiveis aparecem sem contribuir; vinculos mentais
+  usam a Sequence da Persona, nao a do hospedeiro.
+
+Entidades sao deduplicadas por UUID quando aplicavel. Team offline e entidades
+nao carregadas nao geram contribuicao presumida. Nomes e valores enviados pelo
+cliente nunca sao aceitos como prova de vinculo ou recompensa.
+
+## Verificacao
+
+```powershell
+.\gradlew.bat check
 ```
 
-O resultado é limitado por `max_failure_chance`. A lógica original de falha, regressão, morte e consequências do LOTMCraft continua sendo executada pelo próprio LOTMCraft.
+`build` tambem executa `check`. Os testes cobrem validacao de Team, consentimento,
+persistencia NBT, historico, codecs e permissoes do painel, ordem de renderizacao,
+limites de layout, TOML, perda offline e formulas/tolerancias de sanidade.
+Nao inicializam uma sessao multiplayer e nao substituem testes dentro do jogo.
+Dados sinteticos existem somente em `src/test`, fora do JAR distribuido.
 
-## Compatibilidade
+Fontes unicas, recuperacao e persistencia foram testadas manualmente pelo autor
+no jogo. O fluxo completo de oracao/convite/aceite entre dois jogadores e a
+integracao multiplayer permanecem pendentes de validacao.
 
-O desenvolvimento e os testes são direcionados para:
+## Documentacao tecnica
 
-| Componente | Versão |
-|---|---|
-| Minecraft | 1.21.1 |
-| NeoForge | 21.1.217 ou superior |
-| Java | 21 |
-| LOTMCraft | 1.13.0 |
-| Gradle Wrapper | Gradle 8.8 |
+- [Windows setup](SETUP_WINDOWS.md)
+- [Changelog](CHANGELOG.md)
+- [LOTMCraft 1.13.3](LOTMCraft_1.13.3_UPDATE.md)
+- [Red Priest Team audit](RED_PRIEST_TEAM_AUDIT.md)
+- [Historical 1.13.0 API audit](LOTMCraft_1.13.0_API_AUDIT.md)
 
-O projeto compila contra o arquivo local `libs/lotmcraft-1.13.0.jar`.
+## Licenca
 
-O JAR analisado do LOTMCraft declara internamente a versão `1.0.0` no seu `neoforge.mods.toml`. Por esse motivo, a dependência declarada pelo addon utiliza a faixa `[1.0.0,)`, embora o desenvolvimento esteja direcionado ao LOTMCraft 1.13.0.
-
-Alterações nas APIs internas do LOTMCraft podem exigir atualizações no addon, especialmente nas seguintes integrações:
-
-- `de.jakob.lotm.util.BeyonderData`;
-- `de.jakob.lotm.events.custom.StartAdvanceSequencePathwayEvent`;
-- `de.jakob.lotm.events.HonorificNamesEventHandler#answerState`;
-- sistema de quests do LOTMCraft.
-
-## Estrutura do projeto
-
-```text
-src/main/java/                  Código Java do addon
-src/main/resources/             Metadados NeoForge e configuração de Mixins
-libs/                           Dependência local do LOTMCraft
-build.gradle                    Configuração do Gradle e NeoForge
-gradle.properties               Versões e propriedades do projeto
-gradle/wrapper/                 Gradle Wrapper
-gradlew                         Wrapper Unix/Linux/macOS
-gradlew.bat                     Wrapper Windows
-settings.gradle                 Configuração do projeto Gradle
-```
-
-Os diretórios `build/`, `.gradle/`, `run/` e arquivos gerados pelo ambiente de desenvolvimento não devem ser versionados.
-
-## Limitações atuais
-
-- O projeto ainda está em fase MVP/alpha;
-- o balanceamento das Âncoras é provisório;
-- a GUI `/anchors` ainda não foi implementada;
-- o histórico detalhado de transações ainda não foi implementado;
-- o sistema de `AnchorSource` ainda não foi separado para quests, NPCs, jogadores e outras fontes;
-- quests próprias do addon ainda não foram implementadas;
-- a integração nativa com CustomNPCs ainda não foi implementada;
-- as regras definitivas de acumulação por oração ainda estão em desenvolvimento;
-- mudanças na API do LOTMCraft podem quebrar a compilação ou as integrações em runtime.
-
-## Próximas etapas
-
-- separar um sistema de `AnchorSource`;
-- criar quests próprias do addon;
-- finalizar as regras de Âncoras por Sequence;
-- revisar o balanceamento de orações e recompensas;
-- adicionar uma GUI para consulta de Âncoras;
-- implementar histórico de transações;
-- avaliar integração nativa com CustomNPCs.
-
-## Licença
-
-Este projeto é disponibilizado sob todos os direitos reservados. Consulte o arquivo `LICENSE` para as condições de uso, cópia, modificação e redistribuição.
+All Rights Reserved. Consulte [LICENSE](LICENSE). LOTMCraft e suas dependencias
+pertencem aos respectivos autores e nao sao redistribuidos neste repositorio.

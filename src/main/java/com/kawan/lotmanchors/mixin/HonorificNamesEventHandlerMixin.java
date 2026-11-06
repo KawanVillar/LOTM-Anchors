@@ -1,6 +1,8 @@
 package com.kawan.lotmanchors.mixin;
 
 import de.jakob.lotm.events.HonorificNamesEventHandler;
+import com.kawan.lotmanchors.event.HonorificPrayerHandler;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -15,15 +17,12 @@ public abstract class HonorificNamesEventHandlerMixin {
             at = @At("TAIL")
     )
     private static void lotmAnchors$onPrayerCompleted(
-            LivingEntity target,
             LivingEntity worshipper,
+            LivingEntity target,
             CallbackInfo ci) {
 
-        System.out.println(
-                "[LOTM Anchors] Prayer detected: "
-                        + worshipper.getName().getString()
-                        + " -> "
-                        + target.getName().getString()
-        );
+        if (target instanceof ServerPlayer recipient && worshipper instanceof ServerPlayer prayingPlayer) {
+            HonorificPrayerHandler.onPrayer(recipient, prayingPlayer);
+        }
     }
 }

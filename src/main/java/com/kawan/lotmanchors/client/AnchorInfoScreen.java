@@ -1,283 +1,139 @@
 package com.kawan.lotmanchors.client;
 
 import com.kawan.lotmanchors.network.AnchorNetwork;
+import com.kawan.lotmanchors.network.AnchorSourcesNetwork;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
+import net.neoforged.neoforge.network.PacketDistributor;
+import java.util.ArrayList;
+import java.util.List;
 
-public final class AnchorInfoScreen extends Screen {
-
+public final class AnchorInfoScreen extends AnchorScreen {
+    private record Line(String text, int color) {}
     private final AnchorNetwork.OpenAnchorInfoPayload data;
+    private AnchorPanelLayout layout;
+    private double scroll;
+    private String hoveredText;
 
-    public AnchorInfoScreen(
-            AnchorNetwork.OpenAnchorInfoPayload data) {
-
+    public AnchorInfoScreen(AnchorNetwork.OpenAnchorInfoPayload data) {
         super(Component.literal("LOTM Anchors"));
-
         this.data = data;
     }
 
-    @Override
-    public void render(
-            GuiGraphics guiGraphics,
-            int mouseX,
-            int mouseY,
-            float partialTick) {
+    @Override protected void init() {
+        layout = AnchorPanelLayout.fit(width, height, 640, 360);
+        addRenderableWidget(Button.builder(Component.literal("Sources & faith"),
+                button -> PacketDistributor.sendToServer(new AnchorSourcesNetwork.Request(data.target(), AnchorSourcesNetwork.NONE)))
+                .bounds(layout.left() + layout.width() - 122, layout.top() + 8, 110, 20).build());
+        addRenderableWidget(Button.builder(Component.literal("Close"), button -> onClose())
+                .bounds(layout.left() + layout.width() - 82, layout.top() + layout.height() - 28, 70, 20).build());
+        clampScroll();
+    }
 
-        this.renderBackground(
-                guiGraphics,
-                mouseX,
-                mouseY,
-                partialTick
-        );
+    private List<Line> summary() {
+        return List.of(
+                new Line("Pathway: " + data.pathway(), 0xFFFFFF),
+                new Line("Sequence: " + data.sequence() + (data.sequenceName() == null || data.sequenceName().isBlank()
+                        ? "" : " - " + data.sequenceName()), 0xFFFFFF),
+                new Line("Normal anchors: " + number(data.anchors()), 0x86DEA2),
+                new Line("Next advance: " + (data.sequence() <= 0 ? "None" : "Sequence " + (data.sequence() - 1)), 0xFFFFFF),
+                new Line("Next Sequence anchors required: " + number(data.required()), 0xFFD166),
+                new Line("Next Sequence anchors missing: " + number(data.missing()), 0xFFD166),
+                new Line("Additional risk: " + Math.round(data.risk() * 100.0) + "%", 0xFF8585),
+                new Line("Next sanity ceiling (current native maximum): " + (data.sequence() <= 0 ? "No further advance"
+                        : data.nextSanityCeiling() < 0 ? "Not applied" : Math.round(data.nextSanityCeiling() * 100) + "%"), 0xFFD166),
+                new Line("Current stability: " + number(data.totalForStability()) + "/" + number(data.currentSequenceRequired()), 0x86DEA2),
+                new Line("Current anchor deficit: " + number(Math.max(0, data.currentSequenceRequired() - data.totalForStability())), 0xFFD166),
+                new Line("Sanity: " + Math.round(data.sanity() * 100) + "%", 0xFFFFFF),
+                new Line("Current stability requirement: " + number(data.currentSequenceRequired()), 0xAAA3B8),
+                new Line("Anchor sanity ceiling: " + (data.sanityState().equals("Disabled") || data.sanityState().equals("Not applicable")
+                        || data.sanityState().equals("No pressure configured") ? "Not applied" : Math.round(data.sanityCeiling() * 100) + "%"), 0xFFD166),
+                new Line("Anchor pressure: " + data.sanityState(), 0xAAA3B8),
+                new Line("Lifetime earned: " + number(data.lifetimeEarned()), 0xAAA3B8),
+                new Line("Lifetime lost: " + number(data.lifetimeLost()), 0xAAA3B8));
+    }
 
-        int centerX = this.width / 2;
-        int centerY = this.height / 2;
-
-        int boxWidth = 410;
-        int boxHeight = 260;
-
-        int left = centerX - boxWidth / 2;
-        int top = centerY - boxHeight / 2;
-
-        // =========================
-        // MAIN BACKGROUND
-        // =========================
-
-        guiGraphics.fill(
-                left,
-                top,
-                left + boxWidth,
-                top + boxHeight,
-                0xDD101018
-        );
-
-        // =========================
-        // HEADER
-        // =========================
-
-        guiGraphics.drawCenteredString(
-                this.font,
-                "LOTM ANCHORS",
-                centerX,
-                top + 10,
-                0xD8B4FE
-        );
-
-        guiGraphics.drawCenteredString(
-                this.font,
-                data.playerName(),
-                centerX,
-                top + 24,
-                0xFFFFFF
-        );
-
-        // =========================
-        // COLUMNS
-        // =========================
-
-        int leftColumn = left + 15;
-        int rightColumn = left + 225;
-
-        int y = top + 43;
-
-        // =========================
-        // LEFT COLUMN
-        // =========================
-
-        guiGraphics.drawString(
-                this.font,
-                "Pathway: " + data.pathway(),
-                leftColumn,
-                y,
-                0xFFFFFF
-        );
-
-        String sequenceText =
-                "Sequence: " + data.sequence();
-
-        if (data.sequenceName() != null
-                && !data.sequenceName().isBlank()) {
-
-            sequenceText +=
-                    " - " + data.sequenceName();
-        }
-
-        guiGraphics.drawString(
-                this.font,
-                sequenceText,
-                leftColumn,
-                y + 14,
-                0xFFFFFF
-        );
-
-        guiGraphics.drawString(
-                this.font,
-                "Normal Anchors: "
-                        + formatNumber(data.anchors()),
-                leftColumn,
-                y + 32,
-                0x55FF55
-        );
-
-        String nextAdvance =
-                data.sequence() <= 0
-                        ? "None"
-                        : "Sequence "
-                        + (data.sequence() - 1);
-
-        guiGraphics.drawString(
-                this.font,
-                "Next advance: " + nextAdvance,
-                leftColumn,
-                y + 48,
-                0xFFFFFF
-        );
-
-        guiGraphics.drawString(
-                this.font,
-                "Required: "
-                        + formatNumber(data.required()),
-                leftColumn,
-                y + 64,
-                0xFFFF55
-        );
-
-        guiGraphics.drawString(
-                this.font,
-                "Missing: "
-                        + formatNumber(data.missing()),
-                leftColumn,
-                y + 80,
-                0xFFFF55
-        );
-
-        guiGraphics.drawString(
-                this.font,
-                "Additional risk: "
-                        + Math.round(data.risk() * 100.0D)
-                        + "%",
-                leftColumn,
-                y + 96,
-                0xFF5555
-        );
-
-        guiGraphics.drawString(
-                this.font,
-                "Lifetime earned: "
-                        + formatNumber(
-                        data.lifetimeEarned()
-                ),
-                leftColumn,
-                y + 114,
-                0xFFFFFF
-        );
-
-        guiGraphics.drawString(
-                this.font,
-                "Lifetime lost: "
-                        + formatNumber(
-                        data.lifetimeLost()
-                ),
-                leftColumn,
-                y + 130,
-                0xFFFFFF
-        );
-
-        // =========================
-        // RIGHT COLUMN
-        // =========================
-
-        if (!data.uniqueAnchorGroups().isEmpty()) {
-
-            guiGraphics.drawString(
-                    this.font,
-                    "Unique Anchors",
-                    rightColumn,
-                    y,
-                    0xD8B4FE
-            );
-
-            int uniqueY = y + 18;
-
-            for (AnchorNetwork.UniqueAnchorGroup group :
-                    data.uniqueAnchorGroups()) {
-
-                guiGraphics.drawString(
-                        this.font,
-                        group.name(),
-                        rightColumn,
-                        uniqueY,
-                        0xFFFFFF
-                );
-
-                uniqueY += 15;
-
-                for (AnchorNetwork.UniqueAnchorSequenceEntry entry :
-                        group.sequences()) {
-
-                    guiGraphics.drawString(
-                            this.font,
-                            "Sequence "
-                                    + entry.sequence()
-                                    + ": "
-                                    + entry.count(),
-                            rightColumn + 8,
-                            uniqueY,
-                            0xCCCCCC
-                    );
-
-                    uniqueY += 14;
-                }
-
-                guiGraphics.drawString(
-                        this.font,
-                        "Total: "
-                                + formatNumber(
-                                group.totalValue()
-                        ),
-                        rightColumn + 8,
-                        uniqueY,
-                        0x55FF55
-                );
-
-                uniqueY += 22;
+    private List<Line> unique() {
+        List<Line> lines = new ArrayList<>();
+        lines.add(new Line("Unique anchors", 0xD8B4FE));
+        if (data.uniqueAnchorGroups().isEmpty()) lines.add(new Line("No unique sources currently active.", 0xAAA3B8));
+        for (var group : data.uniqueAnchorGroups()) {
+            lines.add(new Line(group.name(), 0xFFFFFF));
+            for (var entry : group.sequences().stream().sorted(java.util.Comparator.comparingInt(
+                    entry -> com.kawan.lotmanchors.anchor.AnchorSourceRow.sequenceRank(entry.sequence()))).toList()) {
+                lines.add(new Line("  " + (entry.sequence() == 10 ? "Non-Beyonder" : "Sequence " + entry.sequence())
+                        + ": " + entry.count(), 0xAAA3B8));
             }
+            lines.add(new Line("  Total: " + number(group.totalValue()), 0x86DEA2));
+            lines.add(new Line("", 0xFFFFFF));
         }
-
-        // =========================
-        // TOTAL FOR STABILITY
-        // =========================
-
-        guiGraphics.drawString(
-                this.font,
-                "Total for Stability: "
-                        + formatNumber(
-                        data.totalForStability()
-                ),
-                leftColumn,
-                top + boxHeight - 38,
-                0xD8B4FE
-        );
-
-        // =========================
-        // FOOTER
-        // =========================
-
-        guiGraphics.drawCenteredString(
-                this.font,
-                "Press ESC to close",
-                centerX,
-                top + boxHeight - 16,
-                0xAAAAAA
-        );
+        return lines;
     }
 
-    private static String formatNumber(long value) {
-        return String.format(
-                java.util.Locale.US,
-                "%,d",
-                value
-        );
+    private boolean twoColumns() { return layout.width() >= 480; }
+    private int viewportHeight() { return layout.height() - 104; }
+    private int contentHeight() {
+        return (twoColumns() ? Math.max(summary().size(), unique().size()) : summary().size() + 1 + unique().size()) * 16;
     }
+    private void clampScroll() {
+        scroll = Math.max(0, Math.min(layout.scrollLimit(contentHeight(), viewportHeight()), scroll));
+    }
+
+    @Override public boolean mouseScrolled(double x, double y, double horizontal, double vertical) {
+        if (x >= layout.left() && x <= layout.left() + layout.width()
+                && y >= layout.top() + 44 && y < layout.top() + layout.height() - 58) {
+            scroll -= vertical * 16;
+            clampScroll();
+            return true;
+        }
+        return false;
+    }
+
+    @Override protected void renderContent(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        int left = layout.left(), top = layout.top(), w = layout.width(), h = layout.height();
+        graphics.fill(left, top, left + w, top + h, 0xF0181522);
+        graphics.fill(left, top, left + w, top + 2, 0xFFAE82D1);
+        graphics.drawString(font, "LOTM ANCHORS", left + 12, top + 10, 0xD8B4FE);
+        graphics.drawString(font, font.plainSubstrByWidth(data.playerName(), w - 24), left + 12, top + 29, 0xAAA3B8);
+        graphics.fill(left + 10, top + 40, left + w - 10, top + 41, 0xFF3B304B);
+        hoveredText = null;
+        clampScroll();
+        if (twoColumns()) {
+            int colWidth = (w - 36) / 2;
+            drawLines(graphics, summary(), left + 12, top + 46, colWidth, mouseX, mouseY);
+            drawLines(graphics, unique(), left + 24 + colWidth, top + 46, colWidth, mouseX, mouseY);
+        } else {
+            List<Line> all = new ArrayList<>(summary());
+            all.add(new Line("", 0xFFFFFF));
+            all.addAll(unique());
+            drawLines(graphics, all, left + 12, top + 46, w - 24, mouseX, mouseY);
+        }
+        graphics.fill(left + 10, top + h - 56, left + w - 10, top + h - 55, 0xFF3B304B);
+        String total = "Total stability: " + number(data.totalForStability());
+        graphics.drawString(font, font.plainSubstrByWidth(total, w - 24), left + 12, top + h - 45, 0xD8B4FE);
+        String hint = contentHeight() > viewportHeight() ? "Scroll for more • ESC to close" : "ESC to close";
+        graphics.drawString(font, font.plainSubstrByWidth(hint, w - 108), left + 12, top + h - 20, 0xAAA3B8);
+    }
+
+    private void drawLines(GuiGraphics graphics, List<Line> lines, int x, int bodyTop, int w, int mouseX, int mouseY) {
+        int bottom = layout.top() + layout.height() - 58;
+        graphics.enableScissor(x, bodyTop, x + w, bottom);
+        for (int i = 0; i < lines.size(); i++) {
+            Line line = lines.get(i);
+            int y = bodyTop + i * 16 - (int) scroll;
+            if (y + 9 < bodyTop || y >= bottom) continue;
+            graphics.drawString(font, font.plainSubstrByWidth(line.text(), w), x, y, line.color());
+            if (mouseX >= x && mouseX < x + w && mouseY >= Math.max(bodyTop, y)
+                    && mouseY < Math.min(bottom, y + 12) && font.width(line.text()) > w) hoveredText = line.text();
+        }
+        graphics.disableScissor();
+    }
+
+    @Override protected void renderOverlay(GuiGraphics graphics, int mouseX, int mouseY) {
+        if (hoveredText != null) graphics.renderTooltip(font,
+                font.split(Component.literal(hoveredText), Math.min(300, layout.width() - 24)), mouseX, mouseY);
+    }
+
+    private static String number(long value) { return String.format(java.util.Locale.US, "%,d", value); }
 }

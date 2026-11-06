@@ -23,6 +23,11 @@ public final class AnchorCommand {
 
         dispatcher.register(
                 Commands.literal("anchors")
+                        .then(Commands.literal("sources").executes(ctx -> {
+                            ServerPlayer player = ctx.getSource().getPlayerOrException();
+                            com.kawan.lotmanchors.network.AnchorSourcesNetwork.open(player, player);
+                            return 1;
+                        }))
                         .executes(ctx -> openInfo(
                                 ctx.getSource(),
                                 ctx.getSource().getPlayerOrException()
