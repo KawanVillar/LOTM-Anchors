@@ -55,7 +55,7 @@ public final class AnchorSourcesPanelTest {
         check(oneMarionette.panelTotal() == 500 && oneMarionette.stability() == 500 && oneMarionette.count(4) == 1,
                 "single Sequence 3 marionette appears in panel and contributes the same 500 points");
         var many = AnchorSourcesNetwork.Snapshot.fromRows(owner, "Test", "fool", 0,
-                java.util.Collections.nCopies(257, oneMarionette.rows().getFirst()));
+                java.util.stream.IntStream.range(0, 257).mapToObj(i -> new AnchorSourceRow(4, new UUID(0, 1000+i), "Puppet " + i, 3, 500, true, "Loaded", "Native link")).toList());
         check(many.truncated() && many.rows().size() == 256 && many.count(4) == 257 && many.total(4) == 128_500,
                 "truncated rows retain full unique source totals");
         var error = AnchorPanelFixtures.create(owner, "error");
@@ -65,7 +65,36 @@ public final class AnchorSourcesPanelTest {
         check(visionary.rows().stream().anyMatch(row -> row.category() == 5 && !row.active() && row.sequence() == -1 && row.value() == 0),
                 "unloaded persona has explicit unavailable state");
         var stale = AnchorSourcesNetwork.Snapshot.fromRows(owner, "Test", "fool", 0, snapshot.rows());
-        check(stale.team() == 0 && stale.npcs() == 0, "snapshot builder drops foreign pathway sources");
+        check(stale.team() == 0 && stale.npcCount() == 3, "non-Red-Priest Team is rejected but controlled NPCs remain");
+        for (String pathway : java.util.List.of("door", "error", "red_priest", "visionary", "sun", "darkness", "death",
+                "demoness", "mother", "tyrant", "wheel_of_fortune", "abyss", "justiciar", "twilight_giant")) {
+            var borrowed = AnchorSourcesNetwork.Snapshot.fromRows(owner, "Borrower", pathway, 100, oneMarionette.rows());
+            check(borrowed.total(4) == 500 && borrowed.stability() == 600
+                    && borrowed.categories().stream().anyMatch(c -> c.category() == 4), "native marionettes survive pathway change: " + pathway);
+            FriendlyByteBuf packet = new FriendlyByteBuf(Unpooled.buffer());
+            try {
+                AnchorSourcesNetwork.Snapshot.CODEC.encode(packet, borrowed);
+                check(borrowed.equals(AnchorSourcesNetwork.Snapshot.CODEC.decode(packet)), "borrowed categories survive codec: " + pathway);
+            } finally { packet.release(); }
+        }
+        check(PathwayAnchorRules.panelCategories("door").equals(java.util.List.of(0)), "empty foreign categories stay hidden");
+        UUID body = new UUID(9, 9);
+        var npc = new AnchorSourceRow(2, body, "NPC", 3, 500, true, "Loaded", "");
+        var avatar = new AnchorSourceRow(3, body, "Avatar", 3, 500, true, "Loaded", "");
+        var puppet = new AnchorSourceRow(4, body, "Puppet", 3, 500, true, "Loaded", "");
+        var persona = new AnchorSourceRow(5, body, "Persona avatar", 3, 500, true, "Loaded avatar", "");
+        var dedup = AnchorSourceRules.normalize(java.util.List.of(npc, avatar, persona, puppet, puppet));
+        check(dedup.size() == 1 && dedup.getFirst().category() == 4, "marionette control has priority over other body links");
+        check(AnchorSourceRules.normalize(java.util.List.of(avatar, persona)).equals(java.util.List.of(persona)), "registered Persona avatar is not also an Error avatar");
+        var mental = new AnchorSourceRow(5, body, "Host / Persona 1", 3, 500, true, "Mind link", "");
+        var mental2 = new AnchorSourceRow(5, body, "Host / Persona 2", 3, 500, true, "Mind link", "");
+        check(AnchorSourceRules.normalize(java.util.List.of(mental, mental2, puppet)).size() == 3, "distinct mental bonds are not body duplicates");
+        var deadPuppet = new AnchorSourceRow(4, body, "Dead puppet", 3, 0, false, "Loaded", "Dead");
+        check(AnchorSourceRules.normalize(java.util.List.of(deadPuppet, avatar)).getFirst().value() == 0, "invalid controlling body cannot fall back to avatar points");
+        var duplicateSnapshot = AnchorSourcesNetwork.Snapshot.fromRows(owner, "Borrower", "door", 0, java.util.List.of(npc, avatar, persona, puppet));
+        check(duplicateSnapshot.panelTotal() == 500 && duplicateSnapshot.rows().size() == 1, "panel total deduplicates across body categories");
+        check(PathwayAnchorRules.panelCategories("red_priest", java.util.List.of(2,3,4,5)).size() == 6, "all categories fit supported category domain");
+        check(!PathwayAnchorRules.supportsCategory("door", 1) && !PathwayAnchorRules.supportsCategory("door", 6), "Team remains pathway-bound and category range stays bounded");
         var mixed = java.util.List.of(
                 new AnchorSourceRow(2, new UUID(0, 1), "AAA", 4, 100, true, "Loaded", ""),
                 new AnchorSourceRow(2, new UUID(0, 2), "ZZZ", 1, 10_000, true, "Loaded", ""),

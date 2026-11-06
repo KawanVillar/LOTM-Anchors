@@ -52,6 +52,14 @@ public final class AnchorScreenTest {
                 check(124 + layout.sourcePageSize() * 32 <= layout.height() - 47, "rows do not overlap notes or footer");
                 check(layout.scrollLimit(500, layout.height() - 104) > 0, "long lists scroll at this size");
                 check(layout.scrollLimit(0, layout.height() - 104) == 0, "empty lists do not overscroll");
+                for (int categories = 1; categories <= 6; categories++) {
+                    int offset = layout.sourceBodyOffset(categories);
+                    int rows = layout.sourcePageSize(categories);
+                    check(124 + offset + (rows - 1) * 32 + 30 <= layout.height() - 47,
+                            "dynamic category rows stay above footer: " + categories);
+                    check(77 + ((categories - 1) / 3) * 22 + 20 < 106 + offset,
+                            "dynamic tabs stay above category heading: " + categories);
+                }
             }
         }
         System.out.println("AnchorScreens: " + checks + " checks passed");

@@ -1,56 +1,57 @@
 # Changelog
 
-Alteracoes relevantes do LOTM Anchors. As entradas anteriores documentam o historico;
-a secao Unreleased descreve o estado que sera publicado no proximo commit.
+Current release notes are provided in English for publication. Older entries
+retain their original language.
 
-## [Unreleased] - 2026-11-05
+## [Unreleased] - 2026-11-06
 
-### Dependencia e repositorio
+- Recognize verified native source ownership across pathways, including borrowed abilities and Visionary roles, without unlocking blocked native abilities.
+- Keep Red Priest Team leadership requirements; allow valid controlled NPC sources on other pathways.
+- Prevent one entity body from contributing through multiple categories, with priority for marionette control.
+- Show extra tabs only for existing sources and use two rows for more than three categories.
+- Exclude dead sources and invalid owners from contribution; share the same collection between overview, panel and stability calculation.
+- Update network protocol to 8; client and server must use the same addon build.
+- Add regression checks for cross-pathway snapshots, codecs, body priority and dynamic tab layouts.
 
-- Atualizado para LOTMCraft 1.13.3 completo; versao centralizada no Gradle e metadados.
-- Validacao de `BeyonderData.class` antes da compilacao e processamento de recursos.
-- JAR do mod principal deixa de ser versionado; instrucoes em `libs/README.md`.
-- Regras de Git para excluir caches, IDEs, logs, mundos e artefatos de build.
+## [1.0.0] - 2026-11-05
 
-### Fe e fontes de ancoras
+Updated for **LOTMCraft 1.13.3**, **Minecraft 1.21.1** and **NeoForge 21.1.217+**.
 
-- Oracao nativa integrada a convites com consentimento, expiracao e protecao contra reutilizacao.
-- Um patrono por fiel; `/faith leave` e `/faith remove` encerram vinculos.
-- Contribuicao por Sequence, persistencia da ultima Sequence/nome para fieis offline.
-- Red Priest Team com validacao reciproca, limites nativos e deduplicacao por UUID.
-- NPCs subordinados carregados preservam contribuicao apos regressao para Sequence 4,
-  enquanto o controlador continuar Red Priest.
-- Fontes exclusivas de Error, Fool e Visionary coletadas em conjunto com o painel
-  e o calculo de estabilidade, sem creditos permanentes no saldo normal.
+### Faith and anchor sources
 
-### Interface e historico
+- Integrated native honorific-name prayers with follower invitations. The praying player must accept before the bond contributes anchors.
+- Follower contributions now scale with their own Sequence. Bonds and last known Sequences persist while followers are offline.
+- Added native sources: Red Priest Team members and subordinate NPCs, Error avatars, Fool marionettes and Visionary virtual personas.
+- Improved ownership checks, Team validation and duplicate prevention.
+- Preserved valid Red Priest NPC contributions after death-related regression to Sequence 4.
 
-- Painel Sources por pathway com ordenacao da Sequence mais forte para a mais fraca,
-  paginacao, tooltips e confirmacao de remocao de fieis.
-- Corrigido desfoque sobre o conteudo e layout para diferentes escalas de GUI.
-- Textos do addon em ingles; dados ficticios removidos da distribuicao e mantidos somente nos testes.
-- Tela History com 32 registros persistentes por jogador, sem novos avisos no chat.
-- Mudancas nos totais das fontes unicas precisam persistir por 30 segundos para serem registradas.
-- Back to sources retorna localmente, preservando aba/pagina, sem depender de resposta do servidor pausado.
-- Protocolo de rede atual: **7**. Cliente e servidor precisam da mesma versao do addon.
+### Interface and history
 
-### Sanidade e configuracao
+- Added a Sources panel with pathway-specific tabs, Sequence ordering, contribution values and detailed tooltips.
+- Added follower removal with confirmation and a separate History screen for the latest 32 events.
+- Added next-Sequence requirements, missing anchors and additional advancement risk to the overview.
+- Fixed blurred text, improved layouts across GUI scales and corrected Back to sources navigation.
+- Removed the fictional-data preview. All addon interface text is in English.
 
-- Integracao opcional com a sanidade nativa, desativada por padrao, para deficit nas Sequences 3 a 0.
-- Teto proporcional ao deficit e ao maximo nativo, queda gradual e tolerancias de entrada,
-  respawn, mudanca de Sequence e deficit continuo. Sem cura automatica ou drenagem abaixo do teto pelo addon.
-- Avisos por estagio e previa dos requisitos/deficit/teto da proxima Sequence no resumo.
-- TOML organizado em secoes, com unidades e exemplos em ingles, preservando chaves ativas.
-- Removidas quatro opcoes obsoletas de oracao sem efeito.
-- Perda offline agora respeita percentual diario e intervalo configurados; continua opcional.
-- Exemplo TOML gerado pela definicao real do NeoForge.
+### Optional sanity integration
 
-### Verificacao
+- Added gradual pressure on native sanity when players in Sequences 3–0 lack anchors.
+- Pressure scales with the anchor deficit and Sequence, with configurable grace periods and warnings.
+- Added a preview of the next Sequence's sanity ceiling using current sources and the current native maximum.
+- Disabled by default. Enable `[anchor_sanity] enabled = true` in the world's server configuration to use it.
 
-- Testes de Team, consentimento, NBT, historico, codecs, permissoes, layout, TOML,
-  perda offline e sanidade incluidos em `check` e `build`.
-- Testes solo de fontes unicas e persistencia informados pelo autor.
-- Fluxo completo de fe entre jogadores ainda pendente de validacao multiplayer.
+### Configuration and fixes
+
+- Reorganized the server TOML with clearer sections and English explanations.
+- Corrected optional offline decay to respect the configured rate and elapsed time.
+- Added automated regression checks for faith, persistence, history, source validation, networking, layouts, configuration and sanity.
+
+### Installation notes
+
+- Install the same addon version on the client and server, together with LOTMCraft 1.13.3 and its required dependencies.
+- The complete LOTMCraft mod is required; it is not bundled with this addon.
+- Existing configuration values are preserved. New options are added when the updated mod loads.
+- The full prayer/invitation/consent flow between players and borrowed-ability gameplay combinations still require in-game validation.
 
 ## [0.1.4] - 2026-10-07
 

@@ -25,7 +25,7 @@ import java.util.UUID;
 
 public final class AnchorNetwork {
 
-    private static final String PROTOCOL_VERSION = "7";
+    private static final String PROTOCOL_VERSION = "8";
 
     private AnchorNetwork() {
     }
@@ -70,7 +70,7 @@ public final class AnchorNetwork {
         long totalForStability = anchors + uniqueAnchors;
         var sanity = AnchorSanityHandler.view(target, totalForStability);
         List<UniqueAnchorGroup> uniqueAnchorGroups = new ArrayList<>();
-        for (int category : PathwayAnchorRules.panelCategories(pathway)) {
+        for (int category : PathwayAnchorRules.panelCategories(pathway, sourceRows.stream().map(AnchorSourceRow::category).toList())) {
             final int selected = category;
             var active = sourceRows.stream().filter(row -> row.category() == selected && row.active()).toList();
             if (active.isEmpty()) continue;

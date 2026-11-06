@@ -81,8 +81,9 @@ public final class AnchorSourcesNetwork {
         public int npcCount() { return count(2); }
 
         public static Snapshot fromRows(UUID owner, String name, String pathway, long normal, List<AnchorSourceRow> sources) {
-            List<Integer> allowed = PathwayAnchorRules.panelCategories(pathway);
-            List<AnchorSourceRow> all = sources.stream().filter(row -> allowed.contains(row.category()))
+            List<AnchorSourceRow> normalized = AnchorSourceRules.normalize(sources);
+            List<Integer> allowed = PathwayAnchorRules.panelCategories(pathway, normalized.stream().map(AnchorSourceRow::category).toList());
+            List<AnchorSourceRow> all = normalized.stream().filter(row -> allowed.contains(row.category()))
                     .sorted(AnchorSourceRow.DISPLAY_ORDER).toList();
             List<CategoryTotal> totals = new ArrayList<>();
             for (int category : allowed) {
@@ -115,10 +116,9 @@ public final class AnchorSourcesNetwork {
             if (categoryCount < 0 || categoryCount > AnchorSourceRow.CATEGORY_COUNT) throw new IllegalArgumentException("Invalid category count");
             List<CategoryTotal> totals = new ArrayList<>();
             Set<Integer> seen = new HashSet<>();
-            List<Integer> allowed = PathwayAnchorRules.panelCategories(pathway);
             for (int i = 0; i < categoryCount; i++) {
                 int category = buf.readInt();
-                if (!allowed.contains(category) || !seen.add(category)) throw new IllegalArgumentException("Invalid source category");
+                if (!PathwayAnchorRules.supportsCategory(pathway, category) || !seen.add(category)) throw new IllegalArgumentException("Invalid source category");
                 totals.add(new CategoryTotal(category, buf.readInt(), buf.readLong()));
             }
             boolean truncated = buf.readBoolean();

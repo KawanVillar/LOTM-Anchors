@@ -8,5 +8,7 @@ public record AnchorPanelLayout(int left, int top, int width, int height) {
         return new AnchorPanelLayout((screenWidth - width) / 2, (screenHeight - height) / 2, width, height);
     }
     public int sourcePageSize() { return Math.max(1, (height - 180) / 32); }
+    public int sourceBodyOffset(int categories) { return categories > 3 ? 22 : 0; }
+    public int sourcePageSize(int categories) { return Math.max(1, (height - 180 - sourceBodyOffset(categories)) / 32); }
     public int scrollLimit(int contentHeight, int viewportHeight) { return Math.max(0, contentHeight - viewportHeight); }
 }

@@ -2,7 +2,7 @@ package com.kawan.lotmanchors.anchor;
 
 import java.util.List;
 
-/** Visibility follows the inspected player's pathway, not the viewer's pathway. */
+/** Pathways define default tabs; verified native sources can expose additional tabs. */
 public final class PathwayAnchorRules {
     private PathwayAnchorRules() {}
     public static boolean allows(String pathway, String source) {
@@ -22,5 +22,14 @@ public final class PathwayAnchorRules {
         if (allows(pathway, "marionette")) return List.of(0, 4);
         if (allows(pathway, "persona")) return List.of(0, 5);
         return List.of(0);
+    }
+    public static boolean supportsCategory(String pathway, int category) {
+        return category >= 0 && category < AnchorSourceRow.CATEGORY_COUNT
+                && (category != AnchorSourceRow.TEAM || "red_priest".equalsIgnoreCase(pathway));
+    }
+    public static List<Integer> panelCategories(String pathway, java.util.Collection<Integer> observed) {
+        var categories = new java.util.TreeSet<>(panelCategories(pathway));
+        observed.stream().filter(category -> supportsCategory(pathway, category)).forEach(categories::add);
+        return List.copyOf(categories);
     }
 }

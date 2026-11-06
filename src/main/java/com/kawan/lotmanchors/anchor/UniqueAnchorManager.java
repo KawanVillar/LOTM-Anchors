@@ -10,7 +10,7 @@ public final class UniqueAnchorManager {
 
     private static List<AnchorSourceRow> sources(ServerPlayer player, int category) {
         if (player.getServer() == null) return List.of();
-        return category == 1 || category == 2 ? AnchorSourceService.subordinates(player) : AnchorSourceService.exclusive(player);
+        return AnchorSourceService.all(player);
     }
     private static int[] counts(ServerPlayer player, int category, int size) {
         int[] counts = new int[size];

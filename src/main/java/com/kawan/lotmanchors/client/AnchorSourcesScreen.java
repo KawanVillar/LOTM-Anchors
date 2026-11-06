@@ -14,7 +14,7 @@ import java.util.UUID;
 public final class AnchorSourcesScreen extends AnchorScreen {
     private final AnchorSourcesNetwork.Snapshot data;
     private int category, page;
-    private int left, top, panelWidth, panelHeight, pageSize;
+    private int left, top, panelWidth, panelHeight, pageSize, bodyOffset;
     private AnchorSourceRow hovered;
 
     public AnchorSourcesScreen(AnchorSourcesNetwork.Snapshot data) { this(data, 0, 0); }
@@ -44,13 +44,17 @@ public final class AnchorSourcesScreen extends AnchorScreen {
 
     private void rebuild() {
         clearWidgets();
-        List<Integer> visible = PathwayAnchorRules.panelCategories(data.pathway());
+        List<Integer> visible = data.categories().stream().map(AnchorSourcesNetwork.CategoryTotal::category).toList();
         if (!visible.contains(category)) { category = visible.getFirst(); page = 0; }
+        var layout = new AnchorPanelLayout(left, top, panelWidth, panelHeight);
+        bodyOffset = layout.sourceBodyOffset(visible.size());
+        pageSize = layout.sourcePageSize(visible.size());
         page = Math.min(page, pages() - 1);
-        int tabWidth = (panelWidth - 20 - (visible.size() - 1) * 2) / visible.size();
+        int columns = Math.min(3, visible.size());
+        int tabWidth = (panelWidth - 20 - (columns - 1) * 2) / columns;
         for (int i = 0; i < visible.size(); i++) {
             int tab = visible.get(i);
-            var tabButton = button(AnchorSourceRow.label(tab) + " (" + data.count(tab) + ")", left + 10 + i * (tabWidth + 2), top + 77, tabWidth,
+            var tabButton = button(AnchorSourceRow.label(tab) + " (" + data.count(tab) + ")", left + 10 + (i % columns) * (tabWidth + 2), top + 77 + (i / columns) * 22, tabWidth,
                     () -> { category = tab; page = 0; rebuild(); });
             tabButton.active = category != tab;
             tabButton.setTooltip(net.minecraft.client.gui.components.Tooltip.create(Component.literal(AnchorSourceRow.description(tab))));
@@ -62,7 +66,7 @@ public final class AnchorSourcesScreen extends AnchorScreen {
             if (index >= rows.size()) break;
             AnchorSourceRow row = rows.get(index);
             if (category == 0 && own) {
-                button("Remove", left + panelWidth - 78, top + 124 + i * 32 + 4, 66, () -> {
+                button("Remove", left + panelWidth - 78, top + 124 + bodyOffset + i * 32 + 4, 66, () -> {
                     minecraft.setScreen(new ConfirmScreen(confirmed -> {
                         minecraft.setScreen(this);
                         if (confirmed) request(row.id());
@@ -106,9 +110,9 @@ public final class AnchorSourcesScreen extends AnchorScreen {
             graphics.drawString(font, font.plainSubstrByWidth(titles[i], cardWidth - 10), x + 5, top + 42, 0xAAA3B8);
             graphics.drawString(font, font.plainSubstrByWidth(number(values[i]), cardWidth - 10), x + 5, top + 56, i == 0 ? 0xD8B4FE : 0x86DEA2);
         }
-        graphics.drawString(font, font.plainSubstrByWidth(AnchorSourceRow.label(category) + " • " + number(data.total(category)) + " anchors", panelWidth - 85), left + 12, top + 106, 0xD8B4FE);
+        graphics.drawString(font, font.plainSubstrByWidth(AnchorSourceRow.label(category) + " • " + number(data.total(category)) + " anchors", panelWidth - 85), left + 12, top + 106 + bodyOffset, 0xD8B4FE);
         String pageLabel = (page + 1) + "/" + pages();
-        graphics.drawString(font, pageLabel, left + panelWidth - 12 - font.width(pageLabel), top + 106, 0xAAA3B8);
+        graphics.drawString(font, pageLabel, left + panelWidth - 12 - font.width(pageLabel), top + 106 + bodyOffset, 0xAAA3B8);
         List<AnchorSourceRow> rows = filtered();
         hovered = null;
         boolean removalVisible = category == 0 && minecraft.player != null
@@ -120,7 +124,7 @@ public final class AnchorSourcesScreen extends AnchorScreen {
             int index = page * pageSize + i;
             if (index >= rows.size()) break;
             AnchorSourceRow row = rows.get(index);
-            int y = top + 124 + i * 32;
+            int y = top + 124 + bodyOffset + i * 32;
             graphics.fill(left + 10, y, left + panelWidth - 10, y + 30, i % 2 == 0 ? 0xFF252031 : 0xFF201B2B);
             graphics.drawString(font, font.plainSubstrByWidth(row.name() + " • " + sequence(row.sequence()), textWidth), left + 16, y + 4, 0xFFFFFF);
             String detail = row.state() + " • " + (row.active() ? (row.value() > 0 ? "Contributing" : "Value configured to zero") : row.reason());
@@ -130,7 +134,7 @@ public final class AnchorSourcesScreen extends AnchorScreen {
             graphics.drawString(font, value, left + panelWidth - actionWidth - 8 - font.width(value), y + 9, row.active() ? 0x86DEA2 : 0xE6B869);
             if (mouseX >= left + 10 && mouseX < left + panelWidth - 10 && mouseY >= y && mouseY < y + 30) hovered = row;
         }
-        if (rows.isEmpty()) graphics.drawString(font, font.plainSubstrByWidth("No sources recorded in this category.", panelWidth - 32), left + 16, top + 130, 0xAAA3B8);
+        if (rows.isEmpty()) graphics.drawString(font, font.plainSubstrByWidth("No sources recorded in this category.", panelWidth - 32), left + 16, top + 130 + bodyOffset, 0xAAA3B8);
         String note = data.truncated() ? "List limited to 256 sources; totals include all."
                 : category == 2 ? "Unloaded NPCs are not listed. Hover for details."
                 : category == 0 ? "Offline: last known Sequence. Hover for details."

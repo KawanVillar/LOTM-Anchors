@@ -161,14 +161,14 @@ public final class AnchorConfig {
         b.comment("============================================================",
                         "PATHWAY SOURCES | POINTS PER VALID LINKED ENTITY",
                         "============================================================",
-                        "Only the owning pathway receives these contributions.",
+                        "Verified native ownership grants contributions, including sources created with borrowed abilities.",
                         "These values add to normal anchors and faith bonds; they are not deposited permanently.",
                         "Sequence keys refer to the linked entity's Sequence, strongest first.",
                         "Setting an entry to 0 disables its contribution. Unsupported Sequences are not counted.")
                 .push("unique_anchors");
 
         // Error Avatar Unique Anchors
-        b.comment("ERROR | AVATARS", "Owner must be on the Error pathway.",
+        b.comment("ERROR | AVATARS", "Avatar must have the Error pathway and confirm its original owner; the owner may use another pathway.",
                         "Only loaded avatars linked to their original owner count. Supported Sequences: 1 to 6.")
                 .push("error_avatars");
 
@@ -206,7 +206,7 @@ public final class AnchorConfig {
 
 
         // Marionette Unique Anchors
-        b.comment("FOOL | MARIONETTES", "Owner must be on the Fool pathway.",
+        b.comment("FOOL | MARIONETTES", "A native controller link is required; the controller may use another pathway.",
                         "Only loaded entities with a valid native marionette/controller link count.",
                         "Supported Sequences: 1 to 9, plus non-Beyonders.")
                 .push("marionettes");
@@ -265,7 +265,7 @@ public final class AnchorConfig {
 
 
         // Persona Unique Anchors
-        b.comment("VISIONARY | VIRTUAL PERSONAS", "Owner must be on the Visionary pathway.",
+        b.comment("VISIONARY | VIRTUAL PERSONAS", "Native Persona ownership is required; changing the owner pathway does not create or remove a link.",
                         "Uses native Persona data on online players and loaded linked Persona avatars.",
                         "Supported Sequences: 1 to 5.")
                 .push("personas");
@@ -298,7 +298,7 @@ public final class AnchorConfig {
         b.pop();
 
         // Subordinate Unique Anchors
-        b.comment("RED PRIEST | TEAM PLAYERS AND NPC SUBORDINATES", "Owner must remain on the Red Priest pathway.",
+        b.comment("RED PRIEST | TEAM PLAYERS AND NPC SUBORDINATES", "Team requires an eligible Red Priest leader. NPCs require a valid native controller, on any pathway.",
                         "This shared table applies to both Team players and NPC subordinates.",
                         "Team players must be online, alive, not spectating, and confirm the leader's native roster.",
                         "Team leadership requires Sequence 3 or stronger. NPCs remain eligible after regression to Sequence 4.",

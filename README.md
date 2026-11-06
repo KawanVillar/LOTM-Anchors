@@ -3,7 +3,7 @@
 Addon para **Minecraft 1.21.1 / NeoForge**, integrado ao **LOTMCraft 1.13.3**.
 Interface, mensagens e comentarios da configuracao em ingles.
 
-Versao atual: **0.1.4**, em desenvolvimento. Balanceamento configuravel.
+Versao atual: **1.0.0**. Balanceamento configuravel.
 
 ## Funcionalidades
 
@@ -11,8 +11,8 @@ Versao atual: **0.1.4**, em desenvolvimento. Balanceamento configuravel.
 - Recompensas por quests, com protecao contra repeticao conforme configuracao.
 - Fe integrada a oracao por nomes honorificos: o destinatario convida e o orador aceita ou recusa.
 - Contribuicao dos fieis ponderada pela propria Sequence; ultima Sequence conhecida preservada offline.
-- Fontes unicas por pathway: Red Priest Team/NPCs, Error avatars, Fool marionettes e Visionary virtual personas.
-- Painel `/anchors sources` com categorias por pathway, ordenacao por Sequence mais forte, paginacao e detalhes ao passar o mouse.
+- Fontes unicas de origem: Red Priest Team/NPCs, Error avatars, Fool marionettes e Visionary virtual personas.
+- Painel `/anchors sources` com categorias nativas e fontes vinculadas, ordenacao por Sequence mais forte, paginacao e detalhes ao passar o mouse.
 - Remocao de fieis com confirmacao; as entidades do mod principal sao somente de consulta.
 - Historico persistente com os ultimos 32 eventos, em tela separada e sem avisos extras no chat.
 - Pressao opcional sobre a sanidade nativa quando faltam ancoras, com tolerancias e avisos por estagio.
@@ -43,10 +43,10 @@ se o arquivo contem `BeyonderData.class`.
 
 No Linux/macOS, use `./gradlew build` com Java 21. O primeiro build pode demorar
 para preparar o ambiente Minecraft. Os JARs ficam em `build/libs/`.
-O nome inclui a versao e um timestamp de compilacao.
+O arquivo de distribuicao desta versao e `lotm_anchors-1.0.0.jar`.
 
 Instale o addon e o LOTMCraft na pasta `mods` do cliente e do servidor.
-Cliente e servidor precisam da mesma versao do addon: **protocolo 7**.
+Cliente e servidor precisam da mesma versao do addon: **protocolo 8**.
 Nao inclua `libs/`, caches, instancias de teste ou JARs gerados no commit.
 O Gradle Wrapper, incluindo seu JAR, faz parte do repositorio.
 
@@ -126,7 +126,7 @@ de contribuir. Nao recupera eventos anteriores a instalacao desta versao.
 Os horarios usam o fuso do cliente. **Back to sources** retorna localmente,
 preservando a aba e a pagina; **Refresh** busca dados atuais do servidor.
 
-## Regras das fontes unicas
+## Regras das fontes unicas e habilidades emprestadas
 
 - **Red Priest:** Team de jogadores online e vivos, com vinculos nativos reciprocos
   e limite de membros respeitado. NPCs usam a subordinacao nativa e precisam estar
@@ -138,9 +138,26 @@ preservando a aba e a pagina; **Refresh** busca dados atuais do servidor.
   Avatares registrados indisponiveis aparecem sem contribuir; vinculos mentais
   usam a Sequence da Persona, nao a do hospedeiro.
 
-Entidades sao deduplicadas por UUID quando aplicavel. Team offline e entidades
-nao carregadas nao geram contribuicao presumida. Nomes e valores enviados pelo
-cliente nunca sao aceitos como prova de vinculo ou recompensa.
+Fontes com dono/controlador nativo valido podem contribuir mesmo quando o jogador
+usa outro caminho. Isso inclui marionetes criadas com Puppeteering registrado,
+replicado, roubado, compartilhado ou por artefato, e fontes efetivamente criadas
+durante a imersao em um papel do Visionary. O addon nao desbloqueia habilidades:
+Avatar Creation e Virtual Persona continuam com suas restricoes nativas.
+
+As abas extras aparecem apenas quando existem fontes registradas/vinculadas;
+as categorias nativas continuam disponiveis mesmo vazias. Mais de tres abas usam
+duas linhas. Team continua restrito a lideranca nativa elegivel de Red Priest.
+
+Cada corpo contribui uma vez: controle de marionete tem prioridade sobre avatar
+de Persona, avatar Error e NPC subordinado. Uma entidade controlada como marionete
+nao continua contribuindo para seu antigo dono como avatar ou NPC. Vinculos mentais
+distintos no mesmo hospedeiro e vinculos de fe sao contabilizados separadamente.
+
+O encerramento da habilidade emprestada nao remove pontos por si so: o que importa
+e se o mod principal preserva ou desfaz o vinculo. Nao ha credito permanente no
+saldo normal. Dono morto/espectador/nao-Beyonder, fonte morta, perda de controle
+ou entidade descarregada nao concedem contribuicao presumida. Nomes e valores
+enviados pelo cliente nunca sao aceitos como prova de vinculo ou recompensa.
 
 ## Verificacao
 
@@ -158,13 +175,11 @@ Fontes unicas, recuperacao e persistencia foram testadas manualmente pelo autor
 no jogo. O fluxo completo de oracao/convite/aceite entre dois jogadores e a
 integracao multiplayer permanecem pendentes de validacao.
 
-## Documentacao tecnica
+## Documentacao
 
-- [Windows setup](SETUP_WINDOWS.md)
-- [Changelog](CHANGELOG.md)
-- [LOTMCraft 1.13.3](LOTMCraft_1.13.3_UPDATE.md)
-- [Red Priest Team audit](RED_PRIEST_TEAM_AUDIT.md)
-- [Historical 1.13.0 API audit](LOTMCraft_1.13.0_API_AUDIT.md)
+- [Changelog e notas de publicacao](CHANGELOG.md)
+- [Desenvolvimento, integracao nativa e limites conhecidos](docs/DEVELOPMENT.md)
+- [Dependencia LOTMCraft para compilacao](libs/README.md)
 
 ## Licenca
 

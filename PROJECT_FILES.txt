@@ -6,6 +6,7 @@ src/main/java/com/kawan/lotmanchors/anchor/AnchorManager.java
 src/main/java/com/kawan/lotmanchors/anchor/AnchorReward.java
 src/main/java/com/kawan/lotmanchors/anchor/AnchorSanityRules.java
 src/main/java/com/kawan/lotmanchors/anchor/AnchorSourceRow.java
+src/main/java/com/kawan/lotmanchors/anchor/AnchorSourceRules.java
 src/main/java/com/kawan/lotmanchors/anchor/AnchorSourceService.java
 src/main/java/com/kawan/lotmanchors/anchor/FollowerBook.java
 src/main/java/com/kawan/lotmanchors/anchor/FollowerData.java

@@ -148,10 +148,3 @@ tasks.register('testAnchorSanity', JavaExec) {
     javaLauncher = javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(21) }
 }
 tasks.named('check') { dependsOn tasks.named('testAnchorSanity') }
-// Append a build timestamp to the output JAR name.
-def timestamp = new Date().format("MMdd_HHmm")
-
-// Keep the declared mod version unchanged in NeoForge metadata.
-tasks.withType(Jar) {
-    archiveVersion.set("${project.version}-${timestamp}")
-}
