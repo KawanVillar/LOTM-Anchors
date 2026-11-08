@@ -20,7 +20,7 @@ public final class AnchorHistoryNetwork {
             tag.putLong("anchor_history_request", tick);
             PacketDistributor.sendToPlayer(viewer, new Snapshot(request.owner(), FollowerData.get(viewer.server).history().entries(request.owner())));
         }));
-        registrar.playToClient(Snapshot.TYPE, Snapshot.CODEC, com.kawan.lotmanchors.client.AnchorNetworkClient::handleHistory);
+        registrar.playToClient(Snapshot.TYPE, Snapshot.CODEC, AnchorClientHandlers.history());
     }
     public record Request(UUID owner) implements CustomPacketPayload {
         public static final Type<Request> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath("lotm_anchors", "history_request"));

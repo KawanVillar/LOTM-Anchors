@@ -169,7 +169,7 @@ public final class AnchorConfig {
 
         // Error Avatar Unique Anchors
         b.comment("ERROR | AVATARS", "Avatar must have the Error pathway and confirm its original owner; the owner may use another pathway.",
-                        "Only loaded avatars linked to their original owner count. Supported Sequences: 1 to 6.")
+                        "Only loaded avatars in the owner current dimension count. Original owner must match. Sequences: 1 to 6.")
                 .push("error_avatars");
 
         ERROR_AVATAR_SEQ1 = b.comment(
@@ -207,7 +207,7 @@ public final class AnchorConfig {
 
         // Marionette Unique Anchors
         b.comment("FOOL | MARIONETTES", "A native controller link is required; the controller may use another pathway.",
-                        "Only loaded entities with a valid native marionette/controller link count.",
+                        "Only loaded entities in the controller current dimension with a valid native link count.",
                         "Supported Sequences: 1 to 9, plus non-Beyonders.")
                 .push("marionettes");
 
@@ -266,7 +266,7 @@ public final class AnchorConfig {
 
         // Persona Unique Anchors
         b.comment("VISIONARY | VIRTUAL PERSONAS", "Native Persona ownership is required; changing the owner pathway does not create or remove a link.",
-                        "Uses native Persona data on online players and loaded linked Persona avatars.",
+                        "Uses online Persona hosts and loaded registered avatars in the owner current dimension.",
                         "Supported Sequences: 1 to 5.")
                 .push("personas");
 
@@ -300,9 +300,9 @@ public final class AnchorConfig {
         // Subordinate Unique Anchors
         b.comment("RED PRIEST | TEAM PLAYERS AND NPC SUBORDINATES", "Team requires an eligible Red Priest leader. NPCs require a valid native controller, on any pathway.",
                         "This shared table applies to both Team players and NPC subordinates.",
-                        "Team players must be online, alive, not spectating, and confirm the leader's native roster.",
+                        "Team players must be online, alive, in the leader dimension, not spectating, and confirm the native roster.",
                         "Team leadership requires Sequence 3 or stronger. NPCs remain eligible after regression to Sequence 4.",
-                        "NPCs must be alive, loaded, and retain the native controller link. Unloaded NPCs do not count.",
+                        "NPCs must be alive, loaded in the controller dimension, and retain the native link. Other dimensions do not count.",
                         "Supported Sequences: 1 to 9, plus non-Beyonders. Sequence 0 is not counted by this source.")
                 .push("subordinates");
 

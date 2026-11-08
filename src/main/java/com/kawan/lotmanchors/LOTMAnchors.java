@@ -44,6 +44,7 @@ public final class LOTMAnchors {
         NeoForge.EVENT_BUS.addListener(FaithCommand::register);
         NeoForge.EVENT_BUS.register(new AnchorDeathHandler());
         NeoForge.EVENT_BUS.register(new AnchorSanityHandler());
+        NeoForge.EVENT_BUS.register(new com.kawan.lotmanchors.event.AnchorSourceCacheHandler());
         NeoForge.EVENT_BUS.register(new com.kawan.lotmanchors.event.AnchorHistoryHandler());
         modBus.addListener(AnchorNetwork::register);
     }

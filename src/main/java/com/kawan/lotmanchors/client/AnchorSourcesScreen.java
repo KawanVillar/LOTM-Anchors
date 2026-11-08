@@ -136,11 +136,11 @@ public final class AnchorSourcesScreen extends AnchorScreen {
         }
         if (rows.isEmpty()) graphics.drawString(font, font.plainSubstrByWidth("No sources recorded in this category.", panelWidth - 32), left + 16, top + 130 + bodyOffset, 0xAAA3B8);
         String note = data.truncated() ? "List limited to 256 sources; totals include all."
-                : category == 2 ? "Unloaded NPCs are not listed. Hover for details."
+                : category == 2 ? "Only loaded NPCs in your dimension are listed."
                 : category == 0 ? "Offline: last known Sequence. Hover for details."
-                : category == 1 ? "Offline Team members do not contribute. Hover for details."
-                : category == 5 ? "Mind links: online hosts only. Registered unloaded avatars show no contribution."
-                : "Only loaded linked entities are listed. Hover for owner, pathway and dimension.";
+                : category == 1 ? "Offline or other-dimension Team members do not contribute."
+                : category == 5 ? "Current dimension only. Unavailable registered avatars contribute zero."
+                : "Only loaded linked entities in your dimension are listed. Hover for details.";
         graphics.drawString(font, font.plainSubstrByWidth(note, panelWidth - 24), left + 12, top + panelHeight - 43, 0xAAA3B8);
     }
 

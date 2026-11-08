@@ -1,7 +1,6 @@
 package com.kawan.lotmanchors.network;
 
 import com.kawan.lotmanchors.anchor.*;
-import com.kawan.lotmanchors.client.AnchorNetworkClient;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -17,7 +16,7 @@ public final class AnchorSourcesNetwork {
     private AnchorSourcesNetwork() {}
 
     public static void register(PayloadRegistrar registrar) {
-        registrar.playToClient(Snapshot.TYPE, Snapshot.CODEC, AnchorNetworkClient::handleSources);
+        registrar.playToClient(Snapshot.TYPE, Snapshot.CODEC, AnchorClientHandlers.sources());
         registrar.playToServer(Request.TYPE, Request.CODEC, (request, context) -> context.enqueueWork(() -> {
             if (!(context.player() instanceof ServerPlayer viewer)) return;
             // Limit expensive world scans. Client requests never carry trusted names or values.
@@ -51,7 +50,7 @@ public final class AnchorSourcesNetwork {
         if (!canView(viewer.getUUID(), owner.getUUID(), viewer.hasPermissions(2))) return;
         PacketDistributor.sendToPlayer(viewer, Snapshot.fromRows(owner.getUUID(), owner.getName().getString(),
                 java.util.Objects.requireNonNullElse(de.jakob.lotm.util.BeyonderData.getPathway(owner), "none"),
-                AnchorManager.getNormalAnchors(owner), AnchorSourceService.all(owner)));
+                AnchorManager.getNormalAnchors(owner), AnchorSourceService.allFresh(owner)));
     }
     public record Request(UUID owner, UUID removeFollower) implements CustomPacketPayload {
         public static final Type<Request> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath("lotm_anchors", "sources_request"));

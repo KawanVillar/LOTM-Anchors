@@ -148,3 +148,25 @@ tasks.register('testAnchorSanity', JavaExec) {
     javaLauncher = javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(21) }
 }
 tasks.named('check') { dependsOn tasks.named('testAnchorSanity') }
+
+tasks.register('testDedicatedServerLoading', JavaExec) {
+    group = 'verification'
+    description = 'Resolves packet handler factories with all client classes blocked.'
+    dependsOn tasks.named('testClasses')
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.kawan.lotmanchors.anchor.DedicatedServerLoadingTest'
+    javaLauncher = javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(21) }
+}
+
+tasks.named('check') { dependsOn tasks.named('testDedicatedServerLoading') }
+
+tasks.register('testServerSourceIndex', JavaExec) {
+    group = 'verification'
+    description = 'Checks per-dimension tick caching, scan counts, live ownership and invalidation.'
+    dependsOn tasks.named('testClasses')
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.kawan.lotmanchors.anchor.ServerSourceIndexTest'
+    javaLauncher = javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(21) }
+}
+
+tasks.named('check') { dependsOn tasks.named('testServerSourceIndex') }

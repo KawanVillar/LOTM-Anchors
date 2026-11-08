@@ -1,6 +1,7 @@
 examples/lotm_anchors-server.toml
 src/main/java/com/kawan/lotmanchors/LOTMAnchors.java
 src/main/java/com/kawan/lotmanchors/anchor/AnchorData.java
+src/main/java/com/kawan/lotmanchors/anchor/AnchorEntityIndex.java
 src/main/java/com/kawan/lotmanchors/anchor/AnchorHistoryBook.java
 src/main/java/com/kawan/lotmanchors/anchor/AnchorManager.java
 src/main/java/com/kawan/lotmanchors/anchor/AnchorReward.java
@@ -11,7 +12,9 @@ src/main/java/com/kawan/lotmanchors/anchor/AnchorSourceService.java
 src/main/java/com/kawan/lotmanchors/anchor/FollowerBook.java
 src/main/java/com/kawan/lotmanchors/anchor/FollowerData.java
 src/main/java/com/kawan/lotmanchors/anchor/OfflineAnchorDecay.java
+src/main/java/com/kawan/lotmanchors/anchor/OwnedSourceIndex.java
 src/main/java/com/kawan/lotmanchors/anchor/PathwayAnchorRules.java
+src/main/java/com/kawan/lotmanchors/anchor/ServerTickCache.java
 src/main/java/com/kawan/lotmanchors/anchor/TeamAnchorRules.java
 src/main/java/com/kawan/lotmanchors/anchor/UniqueAnchorManager.java
 src/main/java/com/kawan/lotmanchors/client/AnchorHistoryScreen.java
@@ -27,11 +30,13 @@ src/main/java/com/kawan/lotmanchors/event/AdvancementStabilityHandler.java
 src/main/java/com/kawan/lotmanchors/event/AnchorDeathHandler.java
 src/main/java/com/kawan/lotmanchors/event/AnchorHistoryHandler.java
 src/main/java/com/kawan/lotmanchors/event/AnchorSanityHandler.java
+src/main/java/com/kawan/lotmanchors/event/AnchorSourceCacheHandler.java
 src/main/java/com/kawan/lotmanchors/event/HonorificPrayerHandler.java
 src/main/java/com/kawan/lotmanchors/event/PlayerLifecycleHandler.java
 src/main/java/com/kawan/lotmanchors/event/QuestAnchorHandler.java
 src/main/java/com/kawan/lotmanchors/mixin/HonorificNamesEventHandlerMixin.java
 src/main/java/com/kawan/lotmanchors/mixin/QuestManagerMixin.java
+src/main/java/com/kawan/lotmanchors/network/AnchorClientHandlers.java
 src/main/java/com/kawan/lotmanchors/network/AnchorHistoryNetwork.java
 src/main/java/com/kawan/lotmanchors/network/AnchorNetwork.java
 src/main/java/com/kawan/lotmanchors/network/AnchorSourcesNetwork.java
@@ -42,6 +47,8 @@ src/test/java/com/kawan/lotmanchors/anchor/AnchorPanelFixtures.java
 src/test/java/com/kawan/lotmanchors/anchor/AnchorSanityTest.java
 src/test/java/com/kawan/lotmanchors/anchor/AnchorScreenTest.java
 src/test/java/com/kawan/lotmanchors/anchor/AnchorSourcesPanelTest.java
+src/test/java/com/kawan/lotmanchors/anchor/DedicatedServerLoadingTest.java
 src/test/java/com/kawan/lotmanchors/anchor/FollowerBookTest.java
 src/test/java/com/kawan/lotmanchors/anchor/FollowerDataTest.java
+src/test/java/com/kawan/lotmanchors/anchor/ServerSourceIndexTest.java
 src/test/java/com/kawan/lotmanchors/anchor/TeamAnchorRulesTest.java

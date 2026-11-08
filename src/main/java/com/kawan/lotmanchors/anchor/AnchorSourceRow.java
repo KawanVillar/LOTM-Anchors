@@ -21,11 +21,11 @@ public record AnchorSourceRow(int category, UUID id, String name, int sequence,
     public static String description(int category) {
         return switch (category) {
             case FOLLOWER -> "Players who accepted a faith bond. Offline followers still count.";
-            case TEAM -> "Players in the native Red Priest team. Only valid online members contribute.";
-            case NPC -> "NPC subordinates linked to you. Only loaded, living NPCs contribute.";
-            case AVATAR -> "Error avatars linked to their original owner. Supported Sequences: 1 to 6.";
-            case MARIONETTE -> "Entities controlled through the native spirit body thread link. Sequences 1 to 9 and non-Beyonders.";
-            case PERSONA -> "Native Persona links on online players and registered Persona avatars. Supported Sequences: 1 to 5.";
+            case TEAM -> "Players in the native Red Priest team. Only valid online members in your dimension contribute.";
+            case NPC -> "NPC subordinates linked to you. Only loaded, living NPCs in your dimension contribute.";
+            case AVATAR -> "Loaded Error avatars in your dimension linked to their original owner. Supported Sequences: 1 to 6.";
+            case MARIONETTE -> "Loaded entities in your dimension controlled through native spirit body threads. Sequences 1 to 9 and non-Beyonders.";
+            case PERSONA -> "Native Persona links and registered avatars available in your current dimension. Supported Sequences: 1 to 5.";
             default -> "";
         };
     }

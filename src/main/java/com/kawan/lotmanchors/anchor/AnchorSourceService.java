@@ -18,6 +18,11 @@ import java.util.*;
 public final class AnchorSourceService {
     private AnchorSourceService() {}
 
+    public static List<AnchorSourceRow> allFresh(ServerPlayer owner) {
+        AnchorEntityIndex.invalidate(owner.serverLevel());
+        return all(owner);
+    }
+
     public static List<AnchorSourceRow> all(ServerPlayer owner) {
         List<AnchorSourceRow> rows = new ArrayList<>(followers(owner));
         rows.addAll(subordinates(owner));
@@ -29,28 +34,27 @@ public final class AnchorSourceService {
         List<AnchorSourceRow> rows = new ArrayList<>();
         boolean ownerActive = owner.isAlive() && !owner.isSpectator() && BeyonderData.isBeyonder(owner);
         Set<UUID> seen = new HashSet<>();
-        for (var level : owner.server.getAllLevels()) {
-            for (Entity entity : level.getAllEntities()) {
-                if (!seen.add(entity.getUUID())) continue;
-                if (!controlledMarionette(entity) && entity instanceof AvatarEntity avatar && owner.getUUID().equals(avatar.getOriginalOwner())
-                        && "error".equalsIgnoreCase(avatar.getPathway())) {
-                    int seq = avatar.getSequence();
-                    boolean active = ownerActive && avatar.isAlive() && seq >= 1 && seq <= 6;
-                    rows.add(new AnchorSourceRow(3, avatar.getUUID(), avatar.getName().getString(), seq,
-                            active ? AnchorConfig.uniqueSourceAnchors(3, seq) : 0, active, "Loaded",
-                            (active ? "Original owner confirmed. " : !avatar.isAlive() ? "Avatar is dead. " : "Unsupported Sequence; expected 1 to 6. ")
-                                    + "Pathway: error. Dimension: " + level.dimension().location()));
-                }
-                if (entity instanceof LivingEntity marionette && marionette.hasData(ModAttachments.MARIONETTE_COMPONENT)) {
-                    var link = marionette.getData(ModAttachments.MARIONETTE_COMPONENT);
-                    if (!link.isMarionette() || !owner.getStringUUID().equals(link.getControllerUUID())) continue;
-                    int seq = BeyonderData.getSequence(marionette);
-                    boolean active = ownerActive && marionette.isAlive() && seq >= 1 && seq <= 10;
-                    rows.add(new AnchorSourceRow(4, marionette.getUUID(), marionette.getName().getString(), seq,
-                            active ? AnchorConfig.uniqueSourceAnchors(4, seq) : 0, active, "Loaded",
-                            (active ? "Native marionette/controller link confirmed. " : !marionette.isAlive() ? "Marionette is dead. " : "Unsupported Sequence; expected 1 to 9 or non-Beyonder. ")
-                                    + "Pathway: " + BeyonderData.getPathway(marionette) + ". Dimension: " + level.dimension().location()));
-                }
+        for (Entity entity : AnchorEntityIndex.candidates(owner.serverLevel(), owner.getUUID())) {
+            if (entity.isRemoved() || entity.level() != owner.serverLevel()) continue;
+            if (!seen.add(entity.getUUID())) continue;
+            if (!controlledMarionette(entity) && entity instanceof AvatarEntity avatar && owner.getUUID().equals(avatar.getOriginalOwner())
+                    && "error".equalsIgnoreCase(avatar.getPathway())) {
+                int seq = avatar.getSequence();
+                boolean active = ownerActive && avatar.isAlive() && seq >= 1 && seq <= 6;
+                rows.add(new AnchorSourceRow(3, avatar.getUUID(), avatar.getName().getString(), seq,
+                        active ? AnchorConfig.uniqueSourceAnchors(3, seq) : 0, active, "Loaded",
+                        (active ? "Original owner confirmed. " : !avatar.isAlive() ? "Avatar is dead. " : "Unsupported Sequence; expected 1 to 6. ")
+                                + "Pathway: error. Dimension: " + entity.level().dimension().location()));
+            }
+            if (entity instanceof LivingEntity marionette && marionette.hasData(ModAttachments.MARIONETTE_COMPONENT)) {
+                var link = marionette.getData(ModAttachments.MARIONETTE_COMPONENT);
+                if (!link.isMarionette() || !owner.getStringUUID().equals(link.getControllerUUID())) continue;
+                int seq = BeyonderData.getSequence(marionette);
+                boolean active = ownerActive && marionette.isAlive() && seq >= 1 && seq <= 10;
+                rows.add(new AnchorSourceRow(4, marionette.getUUID(), marionette.getName().getString(), seq,
+                        active ? AnchorConfig.uniqueSourceAnchors(4, seq) : 0, active, "Loaded",
+                        (active ? "Native marionette/controller link confirmed. " : !marionette.isAlive() ? "Marionette is dead. " : "Unsupported Sequence; expected 1 to 9 or non-Beyonder. ")
+                                + "Pathway: " + BeyonderData.getPathway(marionette) + ". Dimension: " + entity.level().dimension().location()));
             }
         }
         collectPersonas(owner, rows);
@@ -61,6 +65,7 @@ public final class AnchorSourceService {
     private static void collectPersonas(ServerPlayer owner, List<AnchorSourceRow> rows) {
         String ownerName = owner.getName().getString();
         for (ServerPlayer host : owner.server.getPlayerList().getPlayers()) {
+            if (host.serverLevel() != owner.serverLevel()) continue;
             if (!host.hasData(ModAttachments.VIRTUAL_PERSONAS.get())) continue;
             VirtualPersonaComponent component = host.getData(ModAttachments.VIRTUAL_PERSONAS.get());
             int[] cumulative = new int[7];
@@ -82,11 +87,7 @@ public final class AnchorSourceService {
         if (!owner.hasData(ModAttachments.VIRTUAL_PERSONAS.get())) return;
         VirtualPersonaComponent own = owner.getData(ModAttachments.VIRTUAL_PERSONAS.get());
         for (UUID id : new LinkedHashSet<>(own.getAvatars())) {
-            Entity found = null;
-            for (var level : owner.server.getAllLevels()) {
-                found = level.getEntity(id);
-                if (found != null) break;
-            }
+            Entity found = owner.serverLevel().getEntity(id);
             if (found instanceof AvatarEntity avatar) {
                 int seq = avatar.getSequence();
                 boolean owned = owner.getUUID().equals(avatar.getOriginalOwner());
@@ -99,15 +100,14 @@ public final class AnchorSourceService {
                         reason + " Dimension: " + avatar.level().dimension().location()));
             } else {
                 rows.add(new AnchorSourceRow(5, id, "Registered Persona avatar", -1, 0, false,
-                        found == null ? "Not loaded" : "Invalid entity",
-                        "Native avatar registration exists, but ownership and Sequence cannot be verified. No contribution."));
+                        found == null ? "Not available here" : "Invalid entity",
+                        "Native avatar registration exists, but no valid loaded avatar is available in your current dimension. No contribution."));
             }
         }
     }
 
     public static List<AnchorSourceRow> followers(ServerPlayer owner) {
         var data = FollowerData.get(owner.server);
-        HonorificPrayerHandler.countsBySequence(owner); // Refresh online Sequences before snapshot.
         List<AnchorSourceRow> rows = new ArrayList<>();
         boolean eligible = HonorificPrayerHandler.eligible(owner);
         data.book().snapshot().forEach((id, patron) -> {
@@ -145,12 +145,13 @@ public final class AnchorSourceService {
                     String memberLeader = member != null && member.hasData(ModAttachments.TEAM_COMPONENT.get())
                             ? member.getData(ModAttachments.TEAM_COMPONENT.get()).leaderUUID() : "";
                     int sequence = member == null ? -1 : BeyonderData.getSequence(member);
-                    boolean active = leaderEligible && member != null && sequence >= 1 && sequence <= 10
+                    boolean active = leaderEligible && member != null && member.serverLevel() == owner.serverLevel() && sequence >= 1 && sequence <= 10
                             && TeamAnchorRules.canContribute(owner.getUUID(), roster, id, memberLeader,
                             member.isAlive(), member.isSpectator());
                     String reason = !leaderEligible ? "Leader must be a living Red Priest, not spectating, at Sequence 3 or lower."
                             : !roster.contains(id) ? "Team roster is inconsistent or exceeds capacity."
                             : member == null ? "Offline Team members do not contribute."
+                            : member.serverLevel() != owner.serverLevel() ? "Team member is in another dimension."
                             : !member.isAlive() ? "Member is dead."
                             : member.isSpectator() ? "Spectator mode."
                             : !owner.getStringUUID().equals(memberLeader) ? "Member bond does not confirm this leader."
@@ -162,25 +163,24 @@ public final class AnchorSourceService {
             }
         }
         Set<UUID> seen = new HashSet<>();
-        for (var level : owner.server.getAllLevels()) {
-            for (Entity entity : level.getAllEntities()) {
-                if (!(entity instanceof LivingEntity npc) || npc instanceof ServerPlayer
-                        || npc.getUUID().equals(owner.getUUID()) || !seen.add(npc.getUUID())
-                        || !npc.hasData(ModAttachments.SUBORDINATE_COMPONENT.get())) continue;
-                SubordinateComponent link = npc.getData(ModAttachments.SUBORDINATE_COMPONENT.get());
-                if (!link.isSubordinate() || !owner.getStringUUID().equals(link.getControllerUUID())) continue;
-                // A stronger entity link takes priority even when it belongs to another player.
-                if (controlledMarionette(npc) || npc instanceof AvatarEntity avatar
-                        && avatar.getOriginalOwner() != null
-                        && ("error".equalsIgnoreCase(avatar.getPathway()) || "visionary".equalsIgnoreCase(avatar.getPathway()))) continue;
-                int sequence = BeyonderData.getSequence(npc);
-                boolean active = ownerActive && npc.isAlive() && sequence >= 1 && sequence <= 10;
-                String reason = !ownerActive ? "Owner must be a living Beyonder and not spectating."
-                        : !npc.isAlive() ? "NPC is dead." : sequence == 0 ? "No NPC contribution configured for Sequence 0."
-                        : "Valid subordinate. Dimension: " + level.dimension().location();
-                rows.add(new AnchorSourceRow(2, npc.getUUID(), npc.getName().getString(), sequence,
-                        active ? AnchorConfig.subordinateAnchors(sequence) : 0, active, "Loaded", reason));
-            }
+        for (Entity entity : AnchorEntityIndex.candidates(owner.serverLevel(), owner.getUUID())) {
+            if (entity.isRemoved() || entity.level() != owner.serverLevel()) continue;
+            if (!(entity instanceof LivingEntity npc) || npc instanceof ServerPlayer
+                    || npc.getUUID().equals(owner.getUUID()) || !seen.add(npc.getUUID())
+                    || !npc.hasData(ModAttachments.SUBORDINATE_COMPONENT.get())) continue;
+            SubordinateComponent link = npc.getData(ModAttachments.SUBORDINATE_COMPONENT.get());
+            if (!link.isSubordinate() || !owner.getStringUUID().equals(link.getControllerUUID())) continue;
+            // A stronger entity link takes priority even when it belongs to another player.
+            if (controlledMarionette(npc) || npc instanceof AvatarEntity avatar
+                    && avatar.getOriginalOwner() != null
+                    && ("error".equalsIgnoreCase(avatar.getPathway()) || "visionary".equalsIgnoreCase(avatar.getPathway()))) continue;
+            int sequence = BeyonderData.getSequence(npc);
+            boolean active = ownerActive && npc.isAlive() && sequence >= 1 && sequence <= 10;
+            String reason = !ownerActive ? "Owner must be a living Beyonder and not spectating."
+                    : !npc.isAlive() ? "NPC is dead." : sequence == 0 ? "No NPC contribution configured for Sequence 0."
+                    : "Valid subordinate. Dimension: " + entity.level().dimension().location();
+            rows.add(new AnchorSourceRow(2, npc.getUUID(), npc.getName().getString(), sequence,
+                    active ? AnchorConfig.subordinateAnchors(sequence) : 0, active, "Loaded", reason));
         }
         return sorted(rows);
     }

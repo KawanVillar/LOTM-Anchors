@@ -3,7 +3,7 @@
 Addon para **Minecraft 1.21.1 / NeoForge**, integrado ao **LOTMCraft 1.13.3**.
 Interface, mensagens e comentarios da configuracao em ingles.
 
-Versao atual: **1.0.0**. Balanceamento configuravel.
+Versao atual: **1.0.3**. Balanceamento configuravel.
 
 ## Funcionalidades
 
@@ -43,7 +43,7 @@ se o arquivo contem `BeyonderData.class`.
 
 No Linux/macOS, use `./gradlew build` com Java 21. O primeiro build pode demorar
 para preparar o ambiente Minecraft. Os JARs ficam em `build/libs/`.
-O arquivo de distribuicao desta versao e `lotm_anchors-1.0.0.jar`.
+O arquivo de distribuicao desta versao e `lotm_anchors-1.0.3.jar`.
 
 Instale o addon e o LOTMCraft na pasta `mods` do cliente e do servidor.
 Cliente e servidor precisam da mesma versao do addon: **protocolo 8**.
@@ -185,3 +185,35 @@ integracao multiplayer permanecem pendentes de validacao.
 
 All Rights Reserved. Consulte [LICENSE](LICENSE). LOTMCraft e suas dependencias
 pertencem aos respectivos autores e nao sao redistribuidos neste repositorio.
+
+### Dedicated-server loading fix (1.0.3)
+
+Client packet handlers are now created through common-side lazy factories.
+Registering overview, Sources and History packets no longer resolves GUI classes
+on a dedicated server. `testDedicatedServerLoading` blocks all addon/Minecraft
+client classes while resolving the three handler factories and checks the
+registration bytecode. This is a regression check, not a full multiplayer session.
+The network format remains protocol 8.
+
+### Coleta de fontes por dimensao
+
+Fontes unicas contam somente na dimensao atual do dono/controlador: Team, NPCs,
+avatares, marionetes e Personas. Fieis continuam usando vinculos persistentes,
+inclusive offline, sem enumerar entidades. Entrar no Nether, por exemplo, pode
+reduzir a estabilidade se as fontes ficaram no Overworld; o vinculo nao e apagado.
+
+Um indice de candidatos e compartilhado por dimensao/tick entre jogadores,
+historico e sanidade. Valores, Sequence, vida e controlador sao revalidados em
+cada consulta; nao existe cache de pontos. O indice expira no tick seguinte e e
+invalidado em eventos de entrada/saida de entidades, morte e ciclo de vida do
+jogador. O encerramento do servidor limpa as referencias.
+
+Uma troca de dono sem evento nativo e rejeitada pelo dono antigo na revalidacao;
+o novo dono aparece no proximo tick (ate um tick de atraso de simulacao).
+Consultas manuais ao painel/resumo e verificacoes de avanco forcam a atualizacao
+do indice, inclusive para alteracoes feitas no mesmo tick. A coleta nao solicita
+chunks nem varre entidades de outras dimensoes.
+
+O teste sintetico com 20 jogadores, dois consumidores no mesmo tick e 20.000
+entidades reduziu a enumeracao modelada de 1.600.000 para 20.000 visitas. Isso
+valida compartilhamento de trabalho; nao representa um benchmark real de TPS.

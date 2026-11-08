@@ -8,7 +8,6 @@ import com.kawan.lotmanchors.anchor.AnchorSourceRow;
 import com.kawan.lotmanchors.anchor.AnchorSourceService;
 import com.kawan.lotmanchors.anchor.PathwayAnchorRules;
 import com.kawan.lotmanchors.anchor.AnchorManager;
-import com.kawan.lotmanchors.client.AnchorNetworkClient;
 import com.kawan.lotmanchors.event.AnchorSanityHandler;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.network.FriendlyByteBuf;
@@ -39,7 +38,7 @@ public final class AnchorNetwork {
         registrar.playToClient(
                 OpenAnchorInfoPayload.TYPE,
                 OpenAnchorInfoPayload.STREAM_CODEC,
-                AnchorNetworkClient::handleOpenInfo
+                AnchorClientHandlers.overview()
         );
     }
 
@@ -65,7 +64,7 @@ public final class AnchorNetwork {
         long lifetimeLost = data.getLifetimeLost();
 
         List<AnchorSourceRow> sourceRows =
-                AnchorSourceService.all(target);
+                AnchorSourceService.allFresh(target);
         long uniqueAnchors = sourceRows.stream().mapToLong(AnchorSourceRow::value).sum();
         long totalForStability = anchors + uniqueAnchors;
         var sanity = AnchorSanityHandler.view(target, totalForStability);

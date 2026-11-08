@@ -89,7 +89,9 @@ public final class AnchorManager {
             ServerPlayer player,
             int targetSequence
     ) {
-        return failureChance(getAnchors(player), targetSequence);
+        long current = getNormalAnchors(player) + AnchorSourceService.allFresh(player).stream()
+                .mapToLong(AnchorSourceRow::value).sum();
+        return failureChance(current, targetSequence);
     }
 
     public static double failureChance(long current, int targetSequence) {

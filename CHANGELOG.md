@@ -3,7 +3,21 @@
 Current release notes are provided in English for publication. Older entries
 retain their original language.
 
-## [Unreleased] - 2026-11-06
+## [1.0.3] - 2026-11-08
+
+- Restrict unique-source contributions to the controller current dimension, including Team members, NPCs, avatars, marionettes and Personas. Persistent faith bonds remain dimension-independent.
+- Replace repeated world scans per player with a shared per-dimension, per-tick owner index. Continue validating native control, life and contribution values on every query.
+- Invalidate candidate indexes on entity/player lifecycle events and clear them at shutdown. Manual panels and advancement checks force a fresh membership scan.
+- Remove a duplicate follower Sequence refresh pass and add scan-count, scope-isolation, ownership-change and cache-lifecycle regression checks.
+- No additional chunk-loading requests or network protocol changes.
+
+- Fixed dedicated-server startup failure caused by resolving client GUI classes during packet registration.
+- Deferred client handler resolution for the overview, Sources and History packets until client-side packet handling.
+- Added a regression check that blocks client classes while constructing packet handlers.
+- Corrected internal mod metadata and the generated JAR version to 1.0.3.
+- Network protocol remains 8; no world-data format changes.
+
+## [1.0.2] - 2026-11-06
 
 - Recognize verified native source ownership across pathways, including borrowed abilities and Visionary roles, without unlocking blocked native abilities.
 - Keep Red Priest Team leadership requirements; allow valid controlled NPC sources on other pathways.
